@@ -453,7 +453,7 @@ function ContactScreen(props: { contact: ContactData; errors: Errors; emailOptIn
   );
 }
 
-function FormField({ icon: Icon, label, error, className = "", children }: { icon: typeof Mail; label: string; error?: string; className?: string; children: React.ReactNode }) {
+function FormField({ icon: Icon, label, error, className = "", children }: { icon: typeof Mail; label: string; error?: string | undefined; className?: string | undefined; children: React.ReactNode }) {
   return <label className={className}><span className="mb-2 flex items-center gap-2 text-sm font-bold text-foreground"><Icon className="size-4 text-primary" />{label}<span className="text-destructive">*</span></span>{children}{error && <span role="alert" className="mt-2 block text-sm font-semibold text-destructive">{error}</span>}</label>;
 }
 
