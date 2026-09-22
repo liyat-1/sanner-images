@@ -9,4 +9,4 @@
 - [x] Refresh all guest-facing screens with deep navy and hospitality imagery
 - [x] Reorganize existing guest/stay/ID details without changing their information
 - [x] Elevate breakfast offer and keep it prominent above the contact form
-- [ ] Verify the refreshed journey and fix header hydration mismatch
+- [x] Verify the refreshed journey and fix header hydration mismatch
