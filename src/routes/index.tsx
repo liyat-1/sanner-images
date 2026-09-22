@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   ChefHat,
   Circle,
+  Gift,
   Clock3,
   CreditCard,
   FileText,
@@ -22,12 +23,14 @@ import {
   Printer,
   ShieldCheck,
   Smartphone,
-  UserRound,
   UsersRound,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import breakfastImage from "@/assets/seavist-breakfast.jpg";
+import lobbyImage from "@/assets/seavist-lobby.jpg";
+import guestImage from "@/assets/daniel-carter.jpg";
+import licenseImage from "@/assets/daniel-license-sample.jpg";
 import scannerImage from "@/assets/id-on-scanner.jpg";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -150,11 +153,6 @@ function DirectfulCheckIn() {
     if (Object.keys(nextErrors).length === 0) setStage("submitting");
   }
 
-  const isContactValid =
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email) &&
-    contact.phone.replace(/\D/g, "").length >= 10 &&
-    contact.address.trim().length > 5;
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SystemHeader />
@@ -189,7 +187,6 @@ function DirectfulCheckIn() {
             emailOptIn={emailOptIn}
             textOptIn={textOptIn}
             submitting={stage === "submitting"}
-            valid={isContactValid}
             onContactChange={(field, value) => {
               setContact((current) => ({ ...current, [field]: value }));
               if (errors[field]) setErrors((current) => ({ ...current, [field]: undefined }));
@@ -212,16 +209,17 @@ function DirectfulCheckIn() {
 }
 
 function SystemHeader() {
-  const [now, setNow] = useState(new Date());
+  const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
+    setNow(new Date());
     const timer = window.setInterval(() => setNow(new Date()), 30_000);
     return () => window.clearInterval(timer);
   }, []);
   const date = useMemo(
-    () => now.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }),
+    () => now?.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }),
     [now],
   );
-  const time = useMemo(() => now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }), [now]);
+  const time = useMemo(() => now?.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }), [now]);
   return (
     <header className="flex h-[76px] items-center justify-between border-b border-primary-strong bg-primary px-6 text-primary-foreground shadow-sm lg:px-12">
       <div className="flex items-center gap-5">
@@ -233,7 +231,7 @@ function SystemHeader() {
         <span className="text-sm font-medium text-primary-foreground/80 sm:text-base">Front Desk · Check-In</span>
       </div>
       <div className="flex items-center gap-6 text-sm">
-        <span className="hidden font-medium text-primary-foreground/80 sm:block">{date} · {time}</span>
+        <span className="hidden font-medium text-primary-foreground/80 sm:block">{date && time ? `${date} · ${time}` : ""}</span>
         <span className="flex items-center gap-2 font-semibold"><span className="size-2.5 rounded-full bg-success-soft ring-4 ring-success/30" />System Online</span>
       </div>
     </header>
@@ -247,32 +245,25 @@ function WelcomeScreen({ onStart }: { onStart: () => void }) {
     { icon: Fingerprint, label: "Government ID" },
   ];
   return (
-    <section className="screen-enter grid min-h-[calc(100vh-76px)] place-items-center px-6 py-10">
-      <div className="w-full max-w-5xl text-center">
-        <div className="mb-5 flex items-center justify-center gap-3 text-primary">
-          <span className="h-px w-12 bg-gold" />
-          <span className="text-sm font-extrabold uppercase tracking-[0.18em]">Seavist Hotel</span>
-          <span className="h-px w-12 bg-gold" />
-        </div>
-        <h1 className="text-4xl font-bold leading-tight text-primary sm:text-5xl lg:text-6xl">Welcome to Seavist Hotel</h1>
-        <p className="mt-4 text-xl font-medium text-muted-foreground lg:text-2xl">Let&apos;s get you checked in.</p>
-        <div className="mx-auto mt-9 max-w-3xl border-y border-border py-7">
-          <p className="text-lg leading-relaxed text-foreground/85 lg:text-xl">To get started, place your driver&apos;s license, passport, or government-issued ID on the scanner to verify your identity.</p>
-          <div className="mt-7 grid grid-cols-3 gap-3 sm:gap-6">
-            {docs.map(({ icon: Icon, label }) => (
-              <div key={label} className="flex min-h-28 flex-col items-center justify-center gap-3 rounded-md border border-border bg-surface-warm px-3 shadow-sm">
-                <Icon className="size-7 text-primary" strokeWidth={1.7} />
-                <span className="text-sm font-semibold sm:text-base">{label}</span>
-              </div>
-            ))}
+    <section className="screen-enter">
+      <div className="relative flex min-h-[min(720px,calc(100vh-76px))] items-center overflow-hidden">
+        <img src={lobbyImage} alt="Seavist Hotel's oceanfront lobby at dusk" width={1536} height={1024} className="absolute inset-0 h-full w-full object-cover object-center" />
+        <div className="absolute inset-0 bg-primary-deep/65 lg:bg-gradient-to-r lg:from-primary-deep/95 lg:via-primary-deep/65 lg:to-primary-deep/5" />
+        <div className="relative z-10 mx-auto w-full max-w-[1520px] px-6 py-14 sm:px-10 lg:px-20">
+          <div className="max-w-3xl">
+            <p className="mb-6 flex items-center gap-3 text-sm font-bold uppercase tracking-[0.16em] text-gold"><span className="h-px w-10 bg-gold" /> An oceanfront welcome</p>
+            <h1 className="text-5xl font-semibold leading-[1.12] text-foreground sm:text-6xl lg:text-7xl">Welcome to<br /><span className="font-hotel text-gold">Seavist Hotel.</span></h1>
+            <p className="mt-6 text-xl font-medium text-foreground/90 sm:text-2xl">Your stay begins here.</p>
+            <p className="mt-3 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">A few moments to check in, and the ocean is yours. Have your ID ready to get started.</p>
+            <Button variant="gold" size="wide" onClick={onStart} className="mt-8">Start Check-In <ArrowRight /></Button>
           </div>
         </div>
-        <Button variant="gold" size="wide" onClick={onStart} className="mt-8">Start Check-In <ArrowRight /></Button>
-        <div className="mt-7 space-y-2 text-sm text-muted-foreground">
-          <p className="flex items-center justify-center gap-2"><ShieldCheck className="size-4 text-success" />Your information is handled securely in accordance with our <button className="font-semibold text-primary underline underline-offset-2">Privacy Policy</button>.</p>
-          <p>Need help? A member of our front desk team is happy to assist.</p>
-        </div>
       </div>
+      <div className="mx-auto grid max-w-[1520px] gap-6 px-6 py-6 sm:px-10 lg:grid-cols-[1fr_auto] lg:items-center lg:px-20">
+        <div><p className="text-xs font-bold uppercase tracking-[0.14em] text-gold">Before you begin</p><p className="mt-1 text-sm text-muted-foreground">Place one of these IDs on the scanner when prompted.</p></div>
+        <div className="flex flex-wrap gap-2">{docs.map(({ icon: Icon, label }) => <div key={label} className="flex items-center gap-2 rounded-md border border-border bg-card px-4 py-3 text-sm font-semibold"><Icon className="size-4 text-gold" />{label}</div>)}</div>
+      </div>
+      <div className="mx-auto flex max-w-[1520px] flex-wrap items-center gap-x-6 gap-y-2 px-6 pb-7 text-xs text-muted-foreground sm:px-10 lg:px-20"><span className="flex items-center gap-2"><ShieldCheck className="size-4 text-success" />Your information is handled securely.</span><span>Need help? Our front desk team is here for you.</span></div>
     </section>
   );
 }
@@ -287,19 +278,19 @@ function ScanningScreen({ stage, onContinue, onSimulateError }: { stage: Stage; 
         <div className="absolute inset-x-0 bottom-0 bg-primary/90 px-7 py-4 text-center text-sm font-medium text-primary-foreground backdrop-blur-sm">Keep your ID flat and still on top of the scanner.</div>
       </div>
       <div className="flex flex-col justify-center px-7 py-10 lg:px-16">
-        <div className={`grid size-14 place-items-center rounded-full ${verified ? "bg-success-soft text-success" : "bg-surface-blue text-primary"}`}>
+        <div className={`grid size-14 place-items-center rounded-full ${verified ? "bg-success-soft text-success" : "bg-surface-blue text-gold"}`}>
           {verified ? <CheckCircle2 className="size-8" /> : <Fingerprint className="size-8" />}
         </div>
         <p className="mt-6 text-sm font-bold uppercase tracking-[0.16em] text-navy-muted">Identity verification</p>
-        <h1 className="mt-2 text-4xl font-bold text-primary lg:text-5xl">{verified ? "ID Verified" : "Scanning your ID"}</h1>
+        <h1 className="mt-2 text-4xl font-bold text-foreground lg:text-5xl">{verified ? "ID Verified" : "Scanning your ID"}</h1>
         <p className="mt-4 max-w-xl text-lg leading-relaxed text-muted-foreground">{verified ? "Your identity has been successfully verified." : "Keep your ID on the scanner while we verify your information."}</p>
-        <div className="mt-9 max-w-lg border-y border-border py-2">
+        <div className="mt-9 grid max-w-lg gap-3">
           <ScanStep label="ID detected" state={step > 1 ? "done" : step === 1 ? "active" : "waiting"} />
           <ScanStep label="Scanning ID" state={step > 2 ? "done" : step === 2 ? "active" : "waiting"} />
           <ScanStep label="Verifying information" state={step > 3 ? "done" : step === 3 ? "active" : "waiting"} />
         </div>
         <Button variant={verified ? "success" : "navy"} size="wide" onClick={onContinue} disabled={!verified} className="mt-9 self-start">Continue <ArrowRight /></Button>
-        {!verified && <button onClick={onSimulateError} className="mt-5 self-start text-sm font-semibold text-muted-foreground underline underline-offset-4 hover:text-primary">Having trouble reading your ID?</button>}
+        {!verified && <Button variant="link" onClick={onSimulateError} className="mt-4 self-start px-0 text-muted-foreground hover:text-gold">Having trouble reading your ID?</Button>}
       </div>
     </section>
   );
@@ -307,9 +298,10 @@ function ScanningScreen({ stage, onContinue, onSimulateError }: { stage: Stage; 
 
 function ScanStep({ label, state }: { label: string; state: "done" | "active" | "waiting" }) {
   return (
-    <div className="flex h-16 items-center gap-4 border-b border-border last:border-0">
-      {state === "done" ? <span className="grid size-7 place-items-center rounded-full bg-success text-success-foreground"><Check className="size-4" /></span> : state === "active" ? <span className="grid size-7 place-items-center"><span className="status-pulse size-3 rounded-full bg-gold ring-4 ring-gold/20" /></span> : <span className="grid size-7 place-items-center"><Circle className="size-5 text-border" /></span>}
+    <div className={`flex h-16 items-center gap-4 rounded-md border px-5 transition-colors ${state === "active" ? "border-gold/60 bg-gold-soft" : "border-border bg-card"}`}>
+      {state === "done" ? <span className="grid size-7 place-items-center rounded-full bg-success text-success-foreground"><Check className="size-4" /></span> : state === "active" ? <span className="grid size-7 place-items-center"><span className="status-pulse size-3 rounded-full bg-gold ring-4 ring-gold/20" /></span> : <span className="grid size-7 place-items-center"><Circle className="size-5 text-muted-foreground" /></span>}
       <span className={`font-semibold ${state === "waiting" ? "text-muted-foreground" : "text-foreground"}`}>{label}</span>
+      <span className="ml-auto text-xs font-semibold text-muted-foreground">{state === "done" ? "Complete" : state === "active" ? "In progress" : "Upcoming"}</span>
     </div>
   );
 }
@@ -319,11 +311,11 @@ function ScanErrorScreen({ onRetry, onHelp }: { onRetry: () => void; onHelp: () 
     <section className="screen-enter grid min-h-[calc(100vh-76px)] place-items-center px-6 py-10">
       <div className="max-w-2xl text-center">
         <div className="mx-auto grid size-16 place-items-center rounded-full bg-error-soft text-destructive"><CreditCard className="size-8" /></div>
-        <h1 className="mt-6 text-4xl font-bold text-primary">We couldn&apos;t read your ID</h1>
+        <h1 className="mt-6 text-4xl font-bold text-foreground">We couldn&apos;t read your ID</h1>
         <p className="mt-4 text-xl text-muted-foreground">Please place your ID flat on the scanner and try again.</p>
         <p className="mt-3 text-base text-muted-foreground">Make sure the document is fully visible and remains still while we scan it.</p>
         <div className="mt-9 flex flex-wrap justify-center gap-3">
-          <Button variant="navy" size="touch" onClick={onRetry}>Try Again <ArrowRight /></Button>
+          <Button variant="gold" size="touch" onClick={onRetry}>Try Again <ArrowRight /></Button>
           <Button variant="outline" size="touch" onClick={onHelp}><HelpCircle /> Need Help?</Button>
         </div>
       </div>
@@ -333,30 +325,23 @@ function ScanErrorScreen({ onRetry, onHelp }: { onRetry: () => void; onHelp: () 
 
 function DashboardScreen({ verificationTime, actionMessage, onAddInformation, onPrint, onEncode }: { verificationTime: Date | null; actionMessage: string; onAddInformation: () => void; onPrint: () => void; onEncode: () => void }) {
   return (
-    <section className="screen-enter px-5 py-6 lg:px-10 lg:py-8">
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(370px,.75fr)]">
-        <div className="min-w-0">
-          <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-navy-muted">Arriving Guest</p>
-          <div className="mt-3 flex items-center gap-5 border-b border-border pb-5">
-            <div className="grid size-16 shrink-0 place-items-center rounded-full bg-primary text-xl font-bold text-primary-foreground">DC</div>
-            <div>
-              <h1 className="text-3xl font-bold text-primary lg:text-4xl">Daniel Carter</h1>
-              <div className="mt-2 flex flex-wrap items-center gap-3 text-sm font-semibold">
-                <span className="rounded-sm bg-gold-soft px-2.5 py-1 text-gold-foreground">Gold · 4th Stay</span>
-                <span className="text-muted-foreground">Direct Guest</span>
-              </div>
+    <section className="screen-enter mx-auto max-w-[1600px] px-5 py-6 lg:px-10 lg:py-8">
+      <div className="mb-5 flex items-center gap-3"><span className="h-px w-8 bg-gold" /><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-gold">Your arrival at Seavist Hotel</p></div>
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(330px,.8fr)]">
+        <div className="grid min-w-0 gap-5">
+          <div className="rounded-md border border-border bg-card p-5 shadow-lg lg:p-6">
+            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-muted-foreground">Arriving Guest</p>
+            <div className="mt-4 flex items-center gap-4">
+              <img src={guestImage} alt="Portrait of Daniel Carter" width={816} height={816} loading="lazy" className="size-16 shrink-0 rounded-full border-2 border-gold/60 object-cover lg:size-20" />
+               <div className="min-w-0"><h1 className="text-2xl font-bold text-foreground lg:text-3xl">Daniel Carter</h1><div className="mt-2 flex flex-wrap items-center gap-2 text-sm font-semibold"><span className="rounded-sm border border-gold/40 bg-gold-soft px-2.5 py-1 text-gold">✦ Gold · 4th Stay</span><span className="rounded-sm border border-gold/40 bg-gold-soft px-2.5 py-1 text-gold">Direct Guest</span></div></div>
             </div>
           </div>
-          <StaySummary />
+           <StaySummary />
           <IdVerification verificationTime={verificationTime} />
-          <div className="mt-6 flex flex-wrap gap-3 border-t border-border pt-5">
-            <Button variant="outline" size="touch" onClick={onPrint}><Printer /> Print Folio</Button>
-            <Button variant="navy" size="touch" onClick={onEncode}><KeyRound /> Encode 2 Keys</Button>
-            {actionMessage && <div role="status" className="flex min-h-14 items-center gap-2 rounded-md bg-success-soft px-4 font-semibold text-success"><CheckCircle2 className="size-5" />{actionMessage}</div>}
-          </div>
         </div>
         <BreakfastOffer onAdd={onAddInformation} />
       </div>
+      <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-border pt-5"><Button variant="outline" size="touch" onClick={onPrint}><Printer /> Print Folio</Button><Button variant="navy" size="touch" onClick={onEncode}><KeyRound /> Encode 2 Keys</Button>{actionMessage && <div role="status" className="flex min-h-14 items-center gap-2 rounded-md bg-success-soft px-4 font-semibold text-success"><CheckCircle2 className="size-5" />{actionMessage}</div>}</div>
     </section>
   );
 }
@@ -369,99 +354,64 @@ function StaySummary() {
     { label: "Guests", value: "2 Adults", icon: UsersRound },
   ];
   return (
-    <div className="border-b border-border py-5">
-      <div className="grid gap-4 sm:grid-cols-[1.1fr_.9fr]">
-        <div className="flex items-start gap-4 border-r-0 border-border sm:border-r">
-          <span className="grid size-11 place-items-center rounded-md bg-surface-blue text-primary"><Hotel className="size-5" /></span>
-          <div><p className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">Room</p><p className="mt-1 text-3xl font-bold text-primary">1204</p><p className="mt-1 text-sm text-muted-foreground">Ocean Side · 2nd Floor</p><p className="mt-2 flex items-center gap-1 text-sm font-bold text-success"><Check className="size-4" />Assigned</p></div>
-        </div>
-        <div className="flex items-start gap-4 sm:pl-4">
-          <span className="grid size-11 place-items-center rounded-md bg-success-soft text-success"><CheckCircle2 className="size-5" /></span>
-          <div><p className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">Check-In Status</p><p className="mt-2 text-2xl font-bold text-success">Ready <Check className="inline size-5" /></p></div>
-        </div>
+    <div className="rounded-md border border-border bg-card p-5 shadow-lg lg:p-6">
+      <div className="mb-3 flex items-center justify-between"><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-muted-foreground">Your Stay</p><span className="flex items-center gap-1 text-sm font-bold text-success"><CheckCircle2 className="size-4" /> Ready</span></div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="flex items-center gap-3 rounded-md border border-gold/30 bg-gold-soft p-4"><Hotel className="size-6 shrink-0 text-gold" /><div><p className="text-xs font-bold uppercase text-muted-foreground">Room</p><p className="text-2xl font-bold text-foreground">1204</p><p className="text-xs text-muted-foreground">Ocean Side · 2nd Floor</p></div><span className="ml-auto self-start text-xs font-bold text-success">Assigned</span></div>
+        <div className="flex items-center gap-3 rounded-md border border-success/30 bg-success-soft p-4"><CheckCircle2 className="size-6 shrink-0 text-success" /><div><p className="text-xs font-bold uppercase text-muted-foreground">Check-In Status</p><p className="text-xl font-bold text-foreground">Ready <Check className="inline size-5 text-success" /></p></div></div>
       </div>
-      <div className="mt-5 grid grid-cols-2 gap-x-5 border-t border-border pt-5 lg:grid-cols-4">
-        {details.map(({ label, value, sub, icon: Icon }) => <div key={label} className="min-w-0 border-b border-border py-4 lg:border-b-0 lg:border-r lg:px-4 lg:first:pl-0 lg:last:border-r-0"><div className="flex items-center gap-2 text-muted-foreground"><Icon className="size-4" /><span className="text-xs font-bold uppercase tracking-[0.08em]">{label}</span></div><p className="mt-2 truncate text-sm font-bold text-foreground lg:text-base">{value}</p>{sub && <p className="mt-1 text-sm text-muted-foreground">{sub}</p>}</div>)}
-      </div>
+      <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">{details.map(({ label, value, sub, icon: Icon }) => <div key={label} className="min-w-0 rounded-md border border-border bg-secondary p-3"><div className="flex items-center gap-2 text-muted-foreground"><Icon className="size-4 shrink-0" /><span className="text-[11px] font-bold uppercase">{label}</span></div><p className="mt-2 text-sm font-bold text-foreground">{value}</p>{sub && <p className="mt-1 text-xs text-muted-foreground">{sub}</p>}</div>)}</div>
     </div>
   );
 }
 
 function IdVerification({ verificationTime }: { verificationTime: Date | null }) {
-  const stamp = verificationTime ?? new Date();
-  const date = stamp.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-  const time = stamp.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  const date = verificationTime?.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const time = verificationTime?.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
   return (
-    <div className="py-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-navy-muted">ID Scanned</p>
-        <span className="flex items-center gap-2 rounded-sm bg-success-soft px-3 py-1.5 text-sm font-bold text-success"><CheckCircle2 className="size-4" />ID Verified</span>
-      </div>
-      <div className="mt-4 grid gap-5 sm:grid-cols-[220px_1fr]">
-        <div className="relative aspect-[1.58/1] overflow-hidden rounded-md border border-border bg-surface-blue p-4 shadow-sm">
-          <div className="flex items-center justify-between"><span className="text-[10px] font-extrabold text-primary">CALIFORNIA</span><span className="text-[8px] font-bold text-muted-foreground">DRIVER LICENSE</span></div>
-          <div className="mt-3 flex gap-3"><div className="grid h-16 w-12 place-items-center bg-secondary text-primary"><UserRound className="size-6" /></div><div className="space-y-1 text-[8px] text-muted-foreground"><b className="block text-[10px] text-foreground">DANIEL CARTER</b><span className="block">DOB 04/18/1988</span><span className="block">CLASS C</span><span className="block">USA</span></div></div>
-        </div>
-        <div>
-          <p className="text-lg font-bold text-primary">Driver&apos;s License</p>
-          <div className="mt-3 grid grid-cols-2 gap-x-5 gap-y-4 lg:grid-cols-3">
-            <Detail label="ID Number" value="D83947261" />
-            <Detail label="Expiration Date" value="Nov 12, 2028" />
-            <Detail label="Issuing Country" value="USA" />
-          </div>
-          <div className="mt-4 flex items-center gap-3 border-t border-border pt-4 text-sm"><Clock3 className="size-4 text-success" /><span className="text-muted-foreground">Verified</span><strong>{time} · {date}</strong></div>
-        </div>
+    <div className="rounded-md border border-border bg-card p-5 shadow-lg lg:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-muted-foreground">ID Scanned</p><span className="flex items-center gap-2 rounded-sm bg-success-soft px-3 py-1.5 text-sm font-bold text-success"><CheckCircle2 className="size-4" />ID Verified</span></div>
+      <div className="mt-4 grid items-center gap-5 sm:grid-cols-[220px_1fr]">
+        <img src={licenseImage} alt="Sample scanned California driver's license for Daniel Carter" width={1024} height={640} loading="lazy" className="aspect-[1.58/1] w-full rounded-md border border-border object-cover shadow-md" />
+        <div><p className="text-lg font-bold text-foreground">Driver&apos;s License</p><div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-3"><Detail label="ID Number" value="D83947261" /><Detail label="Expiration Date" value="Nov 12, 2028" /><Detail label="Issuing Country" value="USA" /></div><div className="mt-4 flex flex-wrap items-center gap-2 text-sm"><Clock3 className="size-4 text-success" /><span className="text-muted-foreground">Verified</span><strong>{time && date ? `${time} · ${date}` : "—"}</strong></div></div>
       </div>
     </div>
   );
 }
 
 function Detail({ label, value }: { label: string; value: string }) {
-  return <div><p className="text-xs font-semibold text-muted-foreground">{label}</p><p className="mt-1 font-bold">{value}</p></div>;
+  return <div className="rounded-md border border-border bg-secondary p-3"><p className="text-xs font-semibold text-muted-foreground">{label}</p><p className="mt-1 font-bold text-foreground">{value}</p></div>;
 }
 
 function BreakfastOffer({ onAdd }: { onAdd: () => void }) {
   return (
-    <aside className="overflow-hidden rounded-md border border-border bg-surface-warm shadow-lg xl:sticky xl:top-24 xl:self-start">
-      <div className="relative h-56 overflow-hidden"><img src={breakfastImage} alt="Elegant breakfast for two overlooking the ocean" loading="lazy" width={1280} height={900} className="h-full w-full object-cover" /><span className="absolute left-4 top-4 rounded-sm bg-gold px-3 py-1.5 text-xs font-extrabold uppercase tracking-[0.1em] text-gold-foreground">Complimentary</span></div>
-      <div className="p-6 lg:p-7">
-        <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-navy-muted">A Little Something for Your Stay</p>
-        <h2 className="mt-3 text-2xl font-bold leading-tight text-primary">Complimentary Breakfast</h2>
-        <p className="mt-3 leading-relaxed text-muted-foreground">Complete your guest profile and enjoy a complimentary breakfast for two.</p>
-        <div className="mt-5 border-y border-border py-4"><p className="font-bold">Breakfast for two during your stay.</p><p className="mt-1 text-sm text-muted-foreground">Valid Sep 25 – Sep 28, 2025</p></div>
-        <Button variant="gold" size="touch" className="mt-6 w-full" onClick={onAdd}>Add Information <ArrowRight /></Button>
-        <p className="mt-3 text-center text-xs text-muted-foreground">Optional benefit · No purchase required</p>
-      </div>
+    <aside className="overflow-hidden rounded-md border border-gold/40 bg-card shadow-lg xl:sticky xl:top-24">
+      <div className="relative h-56 overflow-hidden"><img src={breakfastImage} alt="Elegant breakfast for two overlooking the ocean" loading="lazy" width={1280} height={900} className="h-full w-full object-cover" /><span className="absolute left-4 top-4 flex items-center gap-2 rounded-sm bg-gold px-3 py-2 text-xs font-extrabold uppercase text-gold-foreground"><Gift className="size-4" /> Your gift</span></div>
+      <div className="p-6 lg:p-7"><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-gold">A little extra for your stay</p><h2 className="font-hotel mt-3 text-3xl leading-tight text-foreground">Breakfast is on us.</h2><p className="mt-3 leading-relaxed text-muted-foreground">Complete your guest profile and enjoy a complimentary breakfast for two.</p><div className="mt-5 rounded-md border border-gold/30 bg-gold-soft p-4"><p className="flex items-center gap-2 font-bold text-gold"><ChefHat className="size-5" />Breakfast for two during your stay.</p><p className="mt-1 text-sm text-muted-foreground">Valid Sep 25 – Sep 28, 2025</p></div><Button variant="gold" size="touch" className="mt-6 w-full" onClick={onAdd}>Add Information <ArrowRight /></Button><p className="mt-3 text-center text-xs text-muted-foreground">Optional benefit · No purchase required</p></div>
     </aside>
   );
 }
 
-function ContactScreen(props: { contact: ContactData; errors: Errors; emailOptIn: boolean; textOptIn: boolean; submitting: boolean; valid: boolean; onContactChange: (field: keyof ContactData, value: string) => void; onEmailOptIn: (value: boolean) => void; onTextOptIn: (value: boolean) => void; onBack: () => void; onSubmit: () => void }) {
+function ContactScreen(props: { contact: ContactData; errors: Errors; emailOptIn: boolean; textOptIn: boolean; submitting: boolean; onContactChange: (field: keyof ContactData, value: string) => void; onEmailOptIn: (value: boolean) => void; onTextOptIn: (value: boolean) => void; onBack: () => void; onSubmit: () => void }) {
   return (
     <section className="screen-enter mx-auto max-w-6xl px-6 py-8 lg:py-10">
-      <div className="flex items-start gap-5 border-b border-border pb-6"><span className="grid size-12 shrink-0 place-items-center rounded-md bg-surface-blue text-primary"><UserRound /></span><div><h1 className="text-3xl font-bold text-primary lg:text-4xl">Confirm Your Contact Information</h1><p className="mt-2 text-lg text-muted-foreground">Add your details so we can keep you connected with Seavist Hotel.</p></div></div>
-      <div className="mt-6 grid gap-7 lg:grid-cols-[1fr_360px]">
-        <div>
-          <div className="grid gap-5 sm:grid-cols-2">
-            <FormField icon={Mail} label="Email Address" error={props.errors.email}><Input type="email" value={props.contact.email} onChange={(event) => props.onContactChange("email", event.target.value)} aria-invalid={Boolean(props.errors.email)} className="h-14 bg-card px-4 text-base" /></FormField>
-            <FormField icon={Phone} label="Phone Number" error={props.errors.phone}><Input type="tel" value={props.contact.phone} onChange={(event) => props.onContactChange("phone", event.target.value)} aria-invalid={Boolean(props.errors.phone)} className="h-14 bg-card px-4 text-base" /></FormField>
-            <FormField icon={MapPin} label="Address" error={props.errors.address} className="sm:col-span-2"><textarea value={props.contact.address} onChange={(event) => props.onContactChange("address", event.target.value)} aria-invalid={Boolean(props.errors.address)} className="min-h-28 w-full resize-none rounded-md border border-input bg-card px-4 py-3 text-base shadow-sm outline-none focus:border-ring focus:ring-1 focus:ring-ring" /></FormField>
-          </div>
-          <div className="mt-7 border-t border-border pt-6"><h2 className="text-xl font-bold text-primary">Stay Connected</h2><p className="mt-1 text-muted-foreground">Choose how you&apos;d like Seavist Hotel to stay in touch.</p><div className="mt-5 space-y-3"><Preference checked={props.emailOptIn} onChange={props.onEmailOptIn} icon={Mail} label="Email me about hotel offers and experiences" /><Preference checked={props.textOptIn} onChange={props.onTextOptIn} icon={Smartphone} label="Text me about hotel offers and experiences" /></div><p className="mt-5 flex items-center gap-2 text-sm text-muted-foreground"><ShieldCheck className="size-4 text-success" />Your information is handled securely and according to our Privacy Policy.</p></div>
-        </div>
-        <div className="overflow-hidden rounded-md border border-border bg-surface-warm shadow-sm"><img src={breakfastImage} alt="Complimentary breakfast for two" loading="lazy" width={1280} height={900} className="h-36 w-full object-cover" /><div className="p-5"><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-navy-muted">A Little Something for Your Stay</p><h2 className="mt-2 text-xl font-bold text-primary">Complimentary Breakfast for Two</h2><p className="mt-2 text-sm text-muted-foreground">Breakfast for two during your stay.</p><p className="mt-4 border-t border-border pt-4 text-sm font-semibold">Valid Sep 25 – Sep 28, 2025</p></div></div>
+      <div className="relative mb-6 flex min-h-44 items-center overflow-hidden rounded-md border border-gold/40"><img src={breakfastImage} alt="Complimentary breakfast for two" loading="lazy" width={1280} height={900} className="absolute inset-0 h-full w-full object-cover object-center" /><div className="absolute inset-0 bg-gradient-to-r from-primary-deep via-primary-deep/95 to-primary-deep/30" /><div className="relative max-w-xl p-6 lg:p-8"><p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-gold"><Gift className="size-4" /> Your complimentary gift</p><h2 className="font-hotel mt-2 text-3xl text-foreground">Breakfast for two, on us.</h2><p className="mt-2 text-sm text-muted-foreground">Complete your details to enjoy breakfast during your stay · Sep 25 – Sep 28, 2025</p></div></div>
+      <div className="mb-6"><h1 className="text-3xl font-bold text-foreground lg:text-4xl">Confirm Your Contact Information</h1><p className="mt-2 text-base text-muted-foreground">Add your details so we can keep you connected with Seavist Hotel.</p></div>
+      <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
+        <div className="rounded-md border border-border bg-card p-5 lg:p-7"><div className="grid gap-5 sm:grid-cols-2"><FormField icon={Mail} label="Email Address" error={props.errors.email}><Input type="email" value={props.contact.email} onChange={(event) => props.onContactChange("email", event.target.value)} aria-invalid={Boolean(props.errors.email)} className="h-14 bg-secondary px-4 text-base" /></FormField><FormField icon={Phone} label="Phone Number" error={props.errors.phone}><Input type="tel" value={props.contact.phone} onChange={(event) => props.onContactChange("phone", event.target.value)} aria-invalid={Boolean(props.errors.phone)} className="h-14 bg-secondary px-4 text-base" /></FormField><FormField icon={MapPin} label="Address" error={props.errors.address} className="sm:col-span-2"><textarea value={props.contact.address} onChange={(event) => props.onContactChange("address", event.target.value)} aria-invalid={Boolean(props.errors.address)} className="min-h-28 w-full resize-none rounded-md border border-input bg-secondary px-4 py-3 text-base text-foreground shadow-sm outline-none focus:border-ring focus:ring-1 focus:ring-ring" /></FormField></div></div>
+        <div className="rounded-md border border-border bg-card p-5"><h2 className="text-xl font-bold text-foreground">Stay Connected</h2><p className="mt-1 text-sm text-muted-foreground">Choose how you&apos;d like Seavist Hotel to stay in touch.</p><div className="mt-5 space-y-3"><Preference checked={props.emailOptIn} onChange={props.onEmailOptIn} icon={Mail} label="Email me about hotel offers and experiences" /><Preference checked={props.textOptIn} onChange={props.onTextOptIn} icon={Smartphone} label="Text me about hotel offers and experiences" /></div><p className="mt-5 flex items-start gap-2 text-xs text-muted-foreground"><ShieldCheck className="size-4 shrink-0 text-success" />Your information is handled securely and according to our Privacy Policy.</p></div>
       </div>
-      <div className="mt-8 flex items-center justify-between border-t border-border pt-6"><Button variant="outline" size="touch" onClick={props.onBack} disabled={props.submitting}><ArrowLeft /> Back</Button><Button variant="gold" size="touch" onClick={props.onSubmit} disabled={!props.valid || props.submitting}>{props.submitting ? <><LoaderCircle className="animate-spin" />Adding your benefit...</> : <>Confirm &amp; Claim Breakfast <ArrowRight /></>}</Button></div>
+       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6"><Button variant="outline" size="touch" onClick={props.onBack} disabled={props.submitting}><ArrowLeft /> Back</Button><Button variant="gold" size="touch" onClick={props.onSubmit} disabled={props.submitting}>{props.submitting ? <><LoaderCircle className="animate-spin" />Adding your benefit...</> : <>Confirm &amp; Claim Breakfast <ArrowRight /></>}</Button></div>
     </section>
   );
 }
 
 function FormField({ icon: Icon, label, error, className = "", children }: { icon: typeof Mail; label: string; error?: string | undefined; className?: string | undefined; children: React.ReactNode }) {
-  return <label className={className}><span className="mb-2 flex items-center gap-2 text-sm font-bold text-foreground"><Icon className="size-4 text-primary" />{label}<span className="text-destructive">*</span></span>{children}{error && <span role="alert" className="mt-2 block text-sm font-semibold text-destructive">{error}</span>}</label>;
+  return <label className={className}><span className="mb-2 flex items-center gap-2 text-sm font-bold text-foreground"><Icon className="size-4 text-gold" />{label}<span className="text-destructive">*</span></span>{children}{error && <span role="alert" className="mt-2 block text-sm font-semibold text-destructive">{error}</span>}</label>;
 }
 
 function Preference({ checked, onChange, icon: Icon, label }: { checked: boolean; onChange: (value: boolean) => void; icon: typeof Mail; label: string }) {
-  return <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-md border border-border bg-card px-4"><Checkbox checked={checked} onCheckedChange={(value) => onChange(value === true)} className="size-5" /><Icon className="size-5 text-primary" /><span className="font-medium">{label}</span></label>;
+  return <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-md border border-border bg-card px-4"><Checkbox checked={checked} onCheckedChange={(value) => onChange(value === true)} className="size-5" /><Icon className="size-5 text-gold" /><span className="font-medium">{label}</span></label>;
 }
 
 function SuccessScreen({ onClose }: { onClose: () => void }) {
@@ -470,14 +420,14 @@ function SuccessScreen({ onClose }: { onClose: () => void }) {
     <section className="screen-enter relative grid min-h-[calc(100vh-76px)] place-items-center overflow-hidden px-6 py-10">
       {confetti.map((position, index) => <span key={position} className={`confetti-fall absolute top-0 h-3 w-1.5 ${index % 2 ? "bg-gold" : "bg-success"} ${position}`} />)}
       <div className="relative z-10 max-w-2xl text-center">
-        <div className="mx-auto grid size-20 place-items-center rounded-full bg-gold-soft text-gold-foreground ring-8 ring-gold/10"><ChefHat className="size-10" /></div>
+         <div className="mx-auto grid size-20 place-items-center rounded-full bg-gold-soft text-gold ring-8 ring-gold/10"><ChefHat className="size-10" /></div>
         <p className="mt-7 text-sm font-extrabold uppercase tracking-[0.16em] text-success">Benefit confirmed</p>
-        <h1 className="mt-2 text-5xl font-bold text-primary">Breakfast Added!</h1>
+        <h1 className="mt-2 text-5xl font-bold text-foreground">Breakfast Added!</h1>
         <p className="mt-4 text-xl font-semibold">You&apos;re all set, Daniel.</p>
         <p className="mx-auto mt-2 max-w-xl text-lg leading-relaxed text-muted-foreground">Complimentary breakfast for two has been added to your stay.</p>
-        <div className="mx-auto mt-7 max-w-md rounded-md border border-gold/40 bg-gold-soft p-5"><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-gold-foreground">Complimentary Breakfast</p><p className="mt-2 text-lg font-bold">Breakfast for two</p><p className="mt-1 text-sm text-muted-foreground">Valid Sep 25 – Sep 28, 2025</p></div>
+         <div className="mx-auto mt-7 max-w-md rounded-md border border-gold/40 bg-gold-soft p-5"><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-gold">Complimentary Breakfast</p><p className="mt-2 text-lg font-bold">Breakfast for two</p><p className="mt-1 text-sm text-muted-foreground">Valid Sep 25 – Sep 28, 2025</p></div>
         <p className="mt-7 text-lg"><strong>Thank you, Daniel.</strong><br /><span className="text-muted-foreground">Enjoy your stay at Seavist Hotel.</span></p>
-        <Button variant="navy" size="wide" className="mt-7" onClick={onClose}>Close</Button>
+         <Button variant="gold" size="wide" className="mt-7" onClick={onClose}>Close</Button>
         <p className="mt-4 text-xs text-muted-foreground">This screen will reset automatically for your privacy.</p>
       </div>
     </section>
