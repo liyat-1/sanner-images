@@ -5,4 +5,4 @@
 - [x] Build guest dashboard, stay details, ID verification, and breakfast offer
 - [x] Build contact form, validation, preferences, submitting, and success states
 - [x] Add shared-device reset and operational action feedback
-- [ ] Verify full flow, responsive layout, and preview health
+- [x] Verify full flow, responsive layout, and preview health

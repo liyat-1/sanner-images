@@ -174,7 +174,10 @@ function DirectfulCheckIn() {
           <DashboardScreen
             verificationTime={verificationTime}
             actionMessage={actionMessage}
-            onAddInformation={() => setStage("contact")}
+            onAddInformation={() => {
+              setActionMessage("");
+              setStage("contact");
+            }}
             onPrint={() => setActionMessage("Your folio is printing now.")}
             onEncode={() => setActionMessage("Two room keys have been encoded.")}
           />
