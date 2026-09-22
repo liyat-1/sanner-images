@@ -19,6 +19,7 @@
  */
 
 @theme inline {
+  --font-sans: "Manrope", sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -59,29 +60,59 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-primary-strong: var(--primary-strong);
+  --color-primary-deep: var(--primary-deep);
+  --color-gold: var(--gold);
+  --color-gold-strong: var(--gold-strong);
+  --color-gold-deep: var(--gold-deep);
+  --color-gold-foreground: var(--gold-foreground);
+  --color-gold-soft: var(--gold-soft);
+  --color-success: var(--success);
+  --color-success-strong: var(--success-strong);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-soft: var(--success-soft);
+  --color-error-soft: var(--error-soft);
+  --color-surface-warm: var(--surface-warm);
+  --color-surface-blue: var(--surface-blue);
+  --color-navy-muted: var(--navy-muted);
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --radius: 0.4rem;
+  --background: oklch(0.976 0.009 84);
+  --foreground: oklch(0.245 0.04 241);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
+  --primary: oklch(0.285 0.069 238);
+  --primary-strong: oklch(0.34 0.078 237);
+  --primary-deep: oklch(0.22 0.054 238);
+  --primary-foreground: oklch(0.99 0.004 90);
+  --secondary: oklch(0.936 0.014 234);
+  --secondary-foreground: oklch(0.285 0.069 238);
+  --muted: oklch(0.947 0.008 238);
+  --muted-foreground: oklch(0.52 0.028 240);
+  --accent: oklch(0.92 0.025 232);
+  --accent-foreground: oklch(0.285 0.069 238);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --border: oklch(0.872 0.016 239);
+  --input: oklch(0.82 0.022 239);
+  --ring: oklch(0.72 0.14 87);
+  --gold: oklch(0.82 0.16 87);
+  --gold-strong: oklch(0.77 0.155 82);
+  --gold-deep: oklch(0.7 0.14 77);
+  --gold-foreground: oklch(0.23 0.045 79);
+  --gold-soft: oklch(0.96 0.045 88);
+  --success: oklch(0.54 0.12 154);
+  --success-strong: oklch(0.47 0.115 154);
+  --success-foreground: oklch(0.99 0.004 90);
+  --success-soft: oklch(0.95 0.035 151);
+  --error-soft: oklch(0.96 0.028 25);
+  --surface-warm: oklch(0.992 0.006 88);
+  --surface-blue: oklch(0.966 0.014 237);
+  --navy-muted: oklch(0.57 0.046 238);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -140,5 +171,44 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+    letter-spacing: 0;
+    margin: 0;
+    min-width: 320px;
+  }
+
+  button, input, textarea { font: inherit; }
+
+  ::selection {
+    background: var(--gold-soft);
+    color: var(--gold-foreground);
+  }
+}
+
+@keyframes screen-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .55; transform: scale(.8); }
+}
+
+@keyframes confetti-fall {
+  0% { opacity: 0; transform: translateY(-20px) rotate(0); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(420px) rotate(260deg); }
+}
+
+@utility screen-enter { animation: screen-enter 360ms ease-out both; }
+@utility status-pulse { animation: status-pulse 1.5s ease-in-out infinite; }
+@utility confetti-fall { animation: confetti-fall 4.5s ease-in infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
   }
 }
