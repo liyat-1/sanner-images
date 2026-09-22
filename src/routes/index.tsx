@@ -23,7 +23,6 @@ import {
   Printer,
   ShieldCheck,
   Smartphone,
-  UserRound,
   UsersRound,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -255,7 +254,7 @@ function WelcomeScreen({ onStart }: { onStart: () => void }) {
     <section className="screen-enter">
       <div className="relative flex min-h-[min(720px,calc(100vh-76px))] items-center overflow-hidden">
         <img src={lobbyImage} alt="Seavist Hotel's oceanfront lobby at dusk" width={1536} height={1024} className="absolute inset-0 h-full w-full object-cover object-center" />
-        <div className="absolute inset-0 bg-primary-deep/75 lg:bg-gradient-to-r lg:from-primary-deep lg:via-primary-deep/90 lg:to-primary-deep/15" />
+        <div className="absolute inset-0 bg-primary-deep/65 lg:bg-gradient-to-r lg:from-primary-deep/95 lg:via-primary-deep/65 lg:to-primary-deep/5" />
         <div className="relative z-10 mx-auto w-full max-w-[1520px] px-6 py-14 sm:px-10 lg:px-20">
           <div className="max-w-3xl">
             <p className="mb-6 flex items-center gap-3 text-sm font-bold uppercase tracking-[0.16em] text-gold"><span className="h-px w-10 bg-gold" /> An oceanfront welcome</p>
@@ -285,11 +284,11 @@ function ScanningScreen({ stage, onContinue, onSimulateError }: { stage: Stage; 
         <div className="absolute inset-x-0 bottom-0 bg-primary/90 px-7 py-4 text-center text-sm font-medium text-primary-foreground backdrop-blur-sm">Keep your ID flat and still on top of the scanner.</div>
       </div>
       <div className="flex flex-col justify-center px-7 py-10 lg:px-16">
-        <div className={`grid size-14 place-items-center rounded-full ${verified ? "bg-success-soft text-success" : "bg-surface-blue text-primary"}`}>
+        <div className={`grid size-14 place-items-center rounded-full ${verified ? "bg-success-soft text-success" : "bg-surface-blue text-gold"}`}>
           {verified ? <CheckCircle2 className="size-8" /> : <Fingerprint className="size-8" />}
         </div>
         <p className="mt-6 text-sm font-bold uppercase tracking-[0.16em] text-navy-muted">Identity verification</p>
-        <h1 className="mt-2 text-4xl font-bold text-primary lg:text-5xl">{verified ? "ID Verified" : "Scanning your ID"}</h1>
+        <h1 className="mt-2 text-4xl font-bold text-foreground lg:text-5xl">{verified ? "ID Verified" : "Scanning your ID"}</h1>
         <p className="mt-4 max-w-xl text-lg leading-relaxed text-muted-foreground">{verified ? "Your identity has been successfully verified." : "Keep your ID on the scanner while we verify your information."}</p>
         <div className="mt-9 grid max-w-lg gap-3">
           <ScanStep label="ID detected" state={step > 1 ? "done" : step === 1 ? "active" : "waiting"} />
@@ -297,7 +296,7 @@ function ScanningScreen({ stage, onContinue, onSimulateError }: { stage: Stage; 
           <ScanStep label="Verifying information" state={step > 3 ? "done" : step === 3 ? "active" : "waiting"} />
         </div>
         <Button variant={verified ? "success" : "navy"} size="wide" onClick={onContinue} disabled={!verified} className="mt-9 self-start">Continue <ArrowRight /></Button>
-        {!verified && <button onClick={onSimulateError} className="mt-5 self-start text-sm font-semibold text-muted-foreground underline underline-offset-4 hover:text-primary">Having trouble reading your ID?</button>}
+        {!verified && <button onClick={onSimulateError} className="mt-5 self-start text-sm font-semibold text-muted-foreground underline underline-offset-4 hover:text-gold">Having trouble reading your ID?</button>}
       </div>
     </section>
   );
@@ -318,7 +317,7 @@ function ScanErrorScreen({ onRetry, onHelp }: { onRetry: () => void; onHelp: () 
     <section className="screen-enter grid min-h-[calc(100vh-76px)] place-items-center px-6 py-10">
       <div className="max-w-2xl text-center">
         <div className="mx-auto grid size-16 place-items-center rounded-full bg-error-soft text-destructive"><CreditCard className="size-8" /></div>
-        <h1 className="mt-6 text-4xl font-bold text-primary">We couldn&apos;t read your ID</h1>
+        <h1 className="mt-6 text-4xl font-bold text-foreground">We couldn&apos;t read your ID</h1>
         <p className="mt-4 text-xl text-muted-foreground">Please place your ID flat on the scanner and try again.</p>
         <p className="mt-3 text-base text-muted-foreground">Make sure the document is fully visible and remains still while we scan it.</p>
         <div className="mt-9 flex flex-wrap justify-center gap-3">
@@ -414,7 +413,7 @@ function ContactScreen(props: { contact: ContactData; errors: Errors; emailOptIn
 }
 
 function FormField({ icon: Icon, label, error, className = "", children }: { icon: typeof Mail; label: string; error?: string | undefined; className?: string | undefined; children: React.ReactNode }) {
-  return <label className={className}><span className="mb-2 flex items-center gap-2 text-sm font-bold text-foreground"><Icon className="size-4 text-primary" />{label}<span className="text-destructive">*</span></span>{children}{error && <span role="alert" className="mt-2 block text-sm font-semibold text-destructive">{error}</span>}</label>;
+  return <label className={className}><span className="mb-2 flex items-center gap-2 text-sm font-bold text-foreground"><Icon className="size-4 text-gold" />{label}<span className="text-destructive">*</span></span>{children}{error && <span role="alert" className="mt-2 block text-sm font-semibold text-destructive">{error}</span>}</label>;
 }
 
 function Preference({ checked, onChange, icon: Icon, label }: { checked: boolean; onChange: (value: boolean) => void; icon: typeof Mail; label: string }) {
@@ -429,7 +428,7 @@ function SuccessScreen({ onClose }: { onClose: () => void }) {
       <div className="relative z-10 max-w-2xl text-center">
         <div className="mx-auto grid size-20 place-items-center rounded-full bg-gold-soft text-gold-foreground ring-8 ring-gold/10"><ChefHat className="size-10" /></div>
         <p className="mt-7 text-sm font-extrabold uppercase tracking-[0.16em] text-success">Benefit confirmed</p>
-        <h1 className="mt-2 text-5xl font-bold text-primary">Breakfast Added!</h1>
+        <h1 className="mt-2 text-5xl font-bold text-foreground">Breakfast Added!</h1>
         <p className="mt-4 text-xl font-semibold">You&apos;re all set, Daniel.</p>
         <p className="mx-auto mt-2 max-w-xl text-lg leading-relaxed text-muted-foreground">Complimentary breakfast for two has been added to your stay.</p>
         <div className="mx-auto mt-7 max-w-md rounded-md border border-gold/40 bg-gold-soft p-5"><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-gold-foreground">Complimentary Breakfast</p><p className="mt-2 text-lg font-bold">Breakfast for two</p><p className="mt-1 text-sm text-muted-foreground">Valid Sep 25 – Sep 28, 2025</p></div>

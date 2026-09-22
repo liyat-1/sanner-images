@@ -6,7 +6,7 @@
 - [x] Build contact form, validation, preferences, submitting, and success states
 - [x] Add shared-device reset and operational action feedback
 - [x] Verify full flow, responsive layout, and preview health
-- [ ] Refresh all guest-facing screens with deep navy and hospitality imagery
-- [ ] Reorganize existing guest/stay/ID details without changing their information
-- [ ] Elevate breakfast offer and keep it prominent above the contact form
+- [x] Refresh all guest-facing screens with deep navy and hospitality imagery
+- [x] Reorganize existing guest/stay/ID details without changing their information
+- [x] Elevate breakfast offer and keep it prominent above the contact form
 - [ ] Verify the refreshed journey and fix header hydration mismatch
