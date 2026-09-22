@@ -30,7 +30,7 @@ import { useEffect, useMemo, useState } from "react";
 import breakfastImage from "@/assets/seavist-breakfast.jpg";
 import lobbyImage from "@/assets/seavist-lobby.jpg";
 import guestImage from "@/assets/daniel-carter.jpg";
-import licenseImage from "@/assets/daniel-license.jpg";
+import licenseImage from "@/assets/daniel-license-sample.jpg";
 import scannerImage from "@/assets/id-on-scanner.jpg";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -153,11 +153,6 @@ function DirectfulCheckIn() {
     if (Object.keys(nextErrors).length === 0) setStage("submitting");
   }
 
-  const isContactValid =
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email) &&
-    contact.phone.replace(/\D/g, "").length >= 10 &&
-    contact.address.trim().length > 5;
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SystemHeader />
@@ -192,7 +187,6 @@ function DirectfulCheckIn() {
             emailOptIn={emailOptIn}
             textOptIn={textOptIn}
             submitting={stage === "submitting"}
-            valid={isContactValid}
             onContactChange={(field, value) => {
               setContact((current) => ({ ...current, [field]: value }));
               if (errors[field]) setErrors((current) => ({ ...current, [field]: undefined }));
@@ -296,7 +290,7 @@ function ScanningScreen({ stage, onContinue, onSimulateError }: { stage: Stage; 
           <ScanStep label="Verifying information" state={step > 3 ? "done" : step === 3 ? "active" : "waiting"} />
         </div>
         <Button variant={verified ? "success" : "navy"} size="wide" onClick={onContinue} disabled={!verified} className="mt-9 self-start">Continue <ArrowRight /></Button>
-        {!verified && <button onClick={onSimulateError} className="mt-5 self-start text-sm font-semibold text-muted-foreground underline underline-offset-4 hover:text-gold">Having trouble reading your ID?</button>}
+        {!verified && <Button variant="link" onClick={onSimulateError} className="mt-4 self-start px-0 text-muted-foreground hover:text-gold">Having trouble reading your ID?</Button>}
       </div>
     </section>
   );
@@ -321,7 +315,7 @@ function ScanErrorScreen({ onRetry, onHelp }: { onRetry: () => void; onHelp: () 
         <p className="mt-4 text-xl text-muted-foreground">Please place your ID flat on the scanner and try again.</p>
         <p className="mt-3 text-base text-muted-foreground">Make sure the document is fully visible and remains still while we scan it.</p>
         <div className="mt-9 flex flex-wrap justify-center gap-3">
-          <Button variant="navy" size="touch" onClick={onRetry}>Try Again <ArrowRight /></Button>
+          <Button variant="gold" size="touch" onClick={onRetry}>Try Again <ArrowRight /></Button>
           <Button variant="outline" size="touch" onClick={onHelp}><HelpCircle /> Need Help?</Button>
         </div>
       </div>
@@ -339,10 +333,10 @@ function DashboardScreen({ verificationTime, actionMessage, onAddInformation, on
             <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-muted-foreground">Arriving Guest</p>
             <div className="mt-4 flex items-center gap-4">
               <img src={guestImage} alt="Portrait of Daniel Carter" width={816} height={816} loading="lazy" className="size-16 shrink-0 rounded-full border-2 border-gold/60 object-cover lg:size-20" />
-              <div className="min-w-0"><h1 className="text-2xl font-bold text-foreground lg:text-3xl">Daniel Carter</h1><div className="mt-2 flex flex-wrap items-center gap-2 text-sm font-semibold"><span className="rounded-sm border border-gold/40 bg-gold-soft px-2.5 py-1 text-gold">✦ Gold · 4th Stay</span><span className="rounded-sm border border-border bg-secondary px-2.5 py-1 text-foreground">Direct Guest</span></div></div>
+               <div className="min-w-0"><h1 className="text-2xl font-bold text-foreground lg:text-3xl">Daniel Carter</h1><div className="mt-2 flex flex-wrap items-center gap-2 text-sm font-semibold"><span className="rounded-sm border border-gold/40 bg-gold-soft px-2.5 py-1 text-gold">✦ Gold · 4th Stay</span><span className="rounded-sm border border-gold/40 bg-gold-soft px-2.5 py-1 text-gold">Direct Guest</span></div></div>
             </div>
-            <StaySummary />
           </div>
+           <StaySummary />
           <IdVerification verificationTime={verificationTime} />
         </div>
         <BreakfastOffer onAdd={onAddInformation} />
@@ -360,7 +354,7 @@ function StaySummary() {
     { label: "Guests", value: "2 Adults", icon: UsersRound },
   ];
   return (
-    <div className="mt-5 border-t border-border pt-5">
+    <div className="rounded-md border border-border bg-card p-5 shadow-lg lg:p-6">
       <div className="mb-3 flex items-center justify-between"><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-muted-foreground">Your Stay</p><span className="flex items-center gap-1 text-sm font-bold text-success"><CheckCircle2 className="size-4" /> Ready</span></div>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="flex items-center gap-3 rounded-md border border-gold/30 bg-gold-soft p-4"><Hotel className="size-6 shrink-0 text-gold" /><div><p className="text-xs font-bold uppercase text-muted-foreground">Room</p><p className="text-2xl font-bold text-foreground">1204</p><p className="text-xs text-muted-foreground">Ocean Side · 2nd Floor</p></div><span className="ml-auto self-start text-xs font-bold text-success">Assigned</span></div>
@@ -398,7 +392,7 @@ function BreakfastOffer({ onAdd }: { onAdd: () => void }) {
   );
 }
 
-function ContactScreen(props: { contact: ContactData; errors: Errors; emailOptIn: boolean; textOptIn: boolean; submitting: boolean; valid: boolean; onContactChange: (field: keyof ContactData, value: string) => void; onEmailOptIn: (value: boolean) => void; onTextOptIn: (value: boolean) => void; onBack: () => void; onSubmit: () => void }) {
+function ContactScreen(props: { contact: ContactData; errors: Errors; emailOptIn: boolean; textOptIn: boolean; submitting: boolean; onContactChange: (field: keyof ContactData, value: string) => void; onEmailOptIn: (value: boolean) => void; onTextOptIn: (value: boolean) => void; onBack: () => void; onSubmit: () => void }) {
   return (
     <section className="screen-enter mx-auto max-w-6xl px-6 py-8 lg:py-10">
       <div className="relative mb-6 flex min-h-44 items-center overflow-hidden rounded-md border border-gold/40"><img src={breakfastImage} alt="Complimentary breakfast for two" loading="lazy" width={1280} height={900} className="absolute inset-0 h-full w-full object-cover object-center" /><div className="absolute inset-0 bg-gradient-to-r from-primary-deep via-primary-deep/95 to-primary-deep/30" /><div className="relative max-w-xl p-6 lg:p-8"><p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-gold"><Gift className="size-4" /> Your complimentary gift</p><h2 className="font-hotel mt-2 text-3xl text-foreground">Breakfast for two, on us.</h2><p className="mt-2 text-sm text-muted-foreground">Complete your details to enjoy breakfast during your stay · Sep 25 – Sep 28, 2025</p></div></div>
@@ -407,7 +401,7 @@ function ContactScreen(props: { contact: ContactData; errors: Errors; emailOptIn
         <div className="rounded-md border border-border bg-card p-5 lg:p-7"><div className="grid gap-5 sm:grid-cols-2"><FormField icon={Mail} label="Email Address" error={props.errors.email}><Input type="email" value={props.contact.email} onChange={(event) => props.onContactChange("email", event.target.value)} aria-invalid={Boolean(props.errors.email)} className="h-14 bg-secondary px-4 text-base" /></FormField><FormField icon={Phone} label="Phone Number" error={props.errors.phone}><Input type="tel" value={props.contact.phone} onChange={(event) => props.onContactChange("phone", event.target.value)} aria-invalid={Boolean(props.errors.phone)} className="h-14 bg-secondary px-4 text-base" /></FormField><FormField icon={MapPin} label="Address" error={props.errors.address} className="sm:col-span-2"><textarea value={props.contact.address} onChange={(event) => props.onContactChange("address", event.target.value)} aria-invalid={Boolean(props.errors.address)} className="min-h-28 w-full resize-none rounded-md border border-input bg-secondary px-4 py-3 text-base text-foreground shadow-sm outline-none focus:border-ring focus:ring-1 focus:ring-ring" /></FormField></div></div>
         <div className="rounded-md border border-border bg-card p-5"><h2 className="text-xl font-bold text-foreground">Stay Connected</h2><p className="mt-1 text-sm text-muted-foreground">Choose how you&apos;d like Seavist Hotel to stay in touch.</p><div className="mt-5 space-y-3"><Preference checked={props.emailOptIn} onChange={props.onEmailOptIn} icon={Mail} label="Email me about hotel offers and experiences" /><Preference checked={props.textOptIn} onChange={props.onTextOptIn} icon={Smartphone} label="Text me about hotel offers and experiences" /></div><p className="mt-5 flex items-start gap-2 text-xs text-muted-foreground"><ShieldCheck className="size-4 shrink-0 text-success" />Your information is handled securely and according to our Privacy Policy.</p></div>
       </div>
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6"><Button variant="outline" size="touch" onClick={props.onBack} disabled={props.submitting}><ArrowLeft /> Back</Button><Button variant="gold" size="touch" onClick={props.onSubmit} disabled={!props.valid || props.submitting}>{props.submitting ? <><LoaderCircle className="animate-spin" />Adding your benefit...</> : <>Confirm &amp; Claim Breakfast <ArrowRight /></>}</Button></div>
+       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6"><Button variant="outline" size="touch" onClick={props.onBack} disabled={props.submitting}><ArrowLeft /> Back</Button><Button variant="gold" size="touch" onClick={props.onSubmit} disabled={props.submitting}>{props.submitting ? <><LoaderCircle className="animate-spin" />Adding your benefit...</> : <>Confirm &amp; Claim Breakfast <ArrowRight /></>}</Button></div>
     </section>
   );
 }
@@ -426,14 +420,14 @@ function SuccessScreen({ onClose }: { onClose: () => void }) {
     <section className="screen-enter relative grid min-h-[calc(100vh-76px)] place-items-center overflow-hidden px-6 py-10">
       {confetti.map((position, index) => <span key={position} className={`confetti-fall absolute top-0 h-3 w-1.5 ${index % 2 ? "bg-gold" : "bg-success"} ${position}`} />)}
       <div className="relative z-10 max-w-2xl text-center">
-        <div className="mx-auto grid size-20 place-items-center rounded-full bg-gold-soft text-gold-foreground ring-8 ring-gold/10"><ChefHat className="size-10" /></div>
+         <div className="mx-auto grid size-20 place-items-center rounded-full bg-gold-soft text-gold ring-8 ring-gold/10"><ChefHat className="size-10" /></div>
         <p className="mt-7 text-sm font-extrabold uppercase tracking-[0.16em] text-success">Benefit confirmed</p>
         <h1 className="mt-2 text-5xl font-bold text-foreground">Breakfast Added!</h1>
         <p className="mt-4 text-xl font-semibold">You&apos;re all set, Daniel.</p>
         <p className="mx-auto mt-2 max-w-xl text-lg leading-relaxed text-muted-foreground">Complimentary breakfast for two has been added to your stay.</p>
-        <div className="mx-auto mt-7 max-w-md rounded-md border border-gold/40 bg-gold-soft p-5"><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-gold-foreground">Complimentary Breakfast</p><p className="mt-2 text-lg font-bold">Breakfast for two</p><p className="mt-1 text-sm text-muted-foreground">Valid Sep 25 – Sep 28, 2025</p></div>
+         <div className="mx-auto mt-7 max-w-md rounded-md border border-gold/40 bg-gold-soft p-5"><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-gold">Complimentary Breakfast</p><p className="mt-2 text-lg font-bold">Breakfast for two</p><p className="mt-1 text-sm text-muted-foreground">Valid Sep 25 – Sep 28, 2025</p></div>
         <p className="mt-7 text-lg"><strong>Thank you, Daniel.</strong><br /><span className="text-muted-foreground">Enjoy your stay at Seavist Hotel.</span></p>
-        <Button variant="navy" size="wide" className="mt-7" onClick={onClose}>Close</Button>
+         <Button variant="gold" size="wide" className="mt-7" onClick={onClose}>Close</Button>
         <p className="mt-4 text-xs text-muted-foreground">This screen will reset automatically for your privacy.</p>
       </div>
     </section>
