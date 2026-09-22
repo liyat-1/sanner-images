@@ -19,10 +19,12 @@ import {
   LoaderCircle,
   Mail,
   MapPin,
+  Moon,
   Phone,
   Printer,
   ShieldCheck,
   Smartphone,
+  Sun,
   UsersRound,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -80,6 +82,7 @@ function DirectfulCheckIn() {
   const [textOptIn, setTextOptIn] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const [actionMessage, setActionMessage] = useState("");
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
 
   useEffect(() => {
     if (stage !== "scanning") return;
@@ -154,8 +157,8 @@ function DirectfulCheckIn() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <SystemHeader />
+    <div className={`${theme === "dark" ? "dark" : ""} min-h-screen bg-background text-foreground transition-colors duration-300`}>
+      <SystemHeader theme={theme} onToggleTheme={() => setTheme((current) => current === "dark" ? "light" : "dark")} />
       <main className="mx-auto min-h-[calc(100vh-76px)] max-w-[1920px]">
         {stage === "welcome" && <WelcomeScreen onStart={() => setStage("scanning")} />}
         {["scanning", "detected", "scanningId", "verifying", "verified"].includes(stage) && (
@@ -208,7 +211,7 @@ function DirectfulCheckIn() {
   );
 }
 
-function SystemHeader() {
+function SystemHeader({ theme, onToggleTheme }: { theme: "light" | "dark"; onToggleTheme: () => void }) {
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
     setNow(new Date());
@@ -221,18 +224,21 @@ function SystemHeader() {
   );
   const time = useMemo(() => now?.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }), [now]);
   return (
-    <header className="flex h-[76px] items-center justify-between border-b border-primary-strong bg-primary px-6 text-primary-foreground shadow-sm lg:px-12">
+    <header className="flex h-[76px] items-center justify-between border-b border-border bg-card/95 px-6 text-foreground shadow-sm backdrop-blur-xl lg:px-12">
       <div className="flex items-center gap-5">
         <div className="flex items-center gap-2.5 text-xl font-extrabold">
-          <span className="grid size-9 place-items-center rounded-md bg-gold text-gold-foreground"><Hotel className="size-5" /></span>
+          <span className="grid size-9 place-items-center rounded-xl bg-gold text-gold-foreground"><Hotel className="size-5" /></span>
           Directful
         </div>
-        <div className="h-7 w-px bg-primary-foreground/25" />
-        <span className="text-sm font-medium text-primary-foreground/80 sm:text-base">Front Desk · Check-In</span>
+        <div className="h-7 w-px bg-border" />
+        <span className="text-sm font-medium text-muted-foreground sm:text-base">Front Desk · Check-In</span>
       </div>
       <div className="flex items-center gap-6 text-sm">
-        <span className="hidden font-medium text-primary-foreground/80 sm:block">{date && time ? `${date} · ${time}` : ""}</span>
+        <span className="hidden font-medium text-muted-foreground sm:block">{date && time ? `${date} · ${time}` : ""}</span>
         <span className="flex items-center gap-2 font-semibold"><span className="size-2.5 rounded-full bg-success-soft ring-4 ring-success/30" />System Online</span>
+        <Button variant="ghost" size="icon" onClick={onToggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}>
+          {theme === "dark" ? <Sun /> : <Moon />}
+        </Button>
       </div>
     </header>
   );
@@ -246,24 +252,26 @@ function WelcomeScreen({ onStart }: { onStart: () => void }) {
   ];
   return (
     <section className="screen-enter">
-      <div className="relative flex min-h-[min(720px,calc(100vh-76px))] items-center overflow-hidden">
+      <div className="relative flex min-h-[calc(100vh-76px)] items-center overflow-hidden">
         <img src={lobbyImage} alt="Seavist Hotel's oceanfront lobby at dusk" width={1536} height={1024} className="absolute inset-0 h-full w-full object-cover object-center" />
-        <div className="absolute inset-0 bg-primary-deep/65 lg:bg-gradient-to-r lg:from-primary-deep/95 lg:via-primary-deep/65 lg:to-primary-deep/5" />
-        <div className="relative z-10 mx-auto w-full max-w-[1520px] px-6 py-14 sm:px-10 lg:px-20">
-          <div className="max-w-3xl">
-            <p className="mb-6 flex items-center gap-3 text-sm font-bold uppercase tracking-[0.16em] text-gold"><span className="h-px w-10 bg-gold" /> An oceanfront welcome</p>
-            <h1 className="text-5xl font-semibold leading-[1.12] text-foreground sm:text-6xl lg:text-7xl">Welcome to<br /><span className="font-hotel text-gold">Seavist Hotel.</span></h1>
-            <p className="mt-6 text-xl font-medium text-foreground/90 sm:text-2xl">Your stay begins here.</p>
-            <p className="mt-3 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">A few moments to check in, and the ocean is yours. Have your ID ready to get started.</p>
-            <Button variant="gold" size="wide" onClick={onStart} className="mt-8">Start Check-In <ArrowRight /></Button>
+        <div className="absolute inset-0 bg-primary-deep/65" />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary-deep/90 via-primary-deep/25 to-primary-deep/45" />
+        <div className="relative z-10 mx-auto w-full max-w-5xl px-6 py-12 text-center sm:px-10">
+          <div className="mx-auto flex max-w-4xl flex-col items-center">
+            <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-gold">An oceanfront welcome</p>
+            <h1 className="font-hotel text-5xl leading-none text-primary-foreground sm:text-7xl lg:text-8xl">Welcome to Seavist Hotel.</h1>
+            <p className="mt-4 text-xl font-medium text-primary-foreground/95 sm:text-2xl">Your stay begins here.</p>
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-primary-foreground/75 sm:text-lg">A few moments to check in, and the ocean is yours. Have your ID ready to get started.</p>
+            <div className="mt-8 w-full rounded-3xl border border-primary-foreground/15 bg-primary-deep/70 p-5 shadow-2xl backdrop-blur-xl sm:p-6">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-gold">Before you begin</p>
+              <p className="mt-1 text-sm text-primary-foreground/75">Place one of these IDs on the scanner when prompted.</p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">{docs.map(({ icon: Icon, label }) => <div key={label} className="flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-primary-foreground/15 bg-primary-foreground/10 px-4 text-sm font-semibold text-primary-foreground"><Icon className="size-4 text-gold" />{label}</div>)}</div>
+            </div>
+            <Button variant="gold" size="wide" onClick={onStart} className="mt-6 min-w-72">Scan Your ID to Start Check-In <ArrowRight /></Button>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-primary-foreground/70"><span className="flex items-center gap-2"><ShieldCheck className="size-4 text-success" />Your information is handled securely.</span><span>Need help? Our front desk team is here for you.</span></div>
           </div>
         </div>
       </div>
-      <div className="mx-auto grid max-w-[1520px] gap-6 px-6 py-6 sm:px-10 lg:grid-cols-[1fr_auto] lg:items-center lg:px-20">
-        <div><p className="text-xs font-bold uppercase tracking-[0.14em] text-gold">Before you begin</p><p className="mt-1 text-sm text-muted-foreground">Place one of these IDs on the scanner when prompted.</p></div>
-        <div className="flex flex-wrap gap-2">{docs.map(({ icon: Icon, label }) => <div key={label} className="flex items-center gap-2 rounded-md border border-border bg-card px-4 py-3 text-sm font-semibold"><Icon className="size-4 text-gold" />{label}</div>)}</div>
-      </div>
-      <div className="mx-auto flex max-w-[1520px] flex-wrap items-center gap-x-6 gap-y-2 px-6 pb-7 text-xs text-muted-foreground sm:px-10 lg:px-20"><span className="flex items-center gap-2"><ShieldCheck className="size-4 text-success" />Your information is handled securely.</span><span>Need help? Our front desk team is here for you.</span></div>
     </section>
   );
 }
@@ -298,7 +306,7 @@ function ScanningScreen({ stage, onContinue, onSimulateError }: { stage: Stage; 
 
 function ScanStep({ label, state }: { label: string; state: "done" | "active" | "waiting" }) {
   return (
-    <div className={`flex h-16 items-center gap-4 rounded-md border px-5 transition-colors ${state === "active" ? "border-gold/60 bg-gold-soft" : "border-border bg-card"}`}>
+    <div className={`flex h-16 items-center gap-4 rounded-2xl border px-5 shadow-sm transition-all ${state === "active" ? "border-gold/60 bg-gold-soft shadow-md" : "border-border bg-card"}`}>
       {state === "done" ? <span className="grid size-7 place-items-center rounded-full bg-success text-success-foreground"><Check className="size-4" /></span> : state === "active" ? <span className="grid size-7 place-items-center"><span className="status-pulse size-3 rounded-full bg-gold ring-4 ring-gold/20" /></span> : <span className="grid size-7 place-items-center"><Circle className="size-5 text-muted-foreground" /></span>}
       <span className={`font-semibold ${state === "waiting" ? "text-muted-foreground" : "text-foreground"}`}>{label}</span>
       <span className="ml-auto text-xs font-semibold text-muted-foreground">{state === "done" ? "Complete" : state === "active" ? "In progress" : "Upcoming"}</span>
@@ -327,21 +335,21 @@ function DashboardScreen({ verificationTime, actionMessage, onAddInformation, on
   return (
     <section className="screen-enter mx-auto max-w-[1600px] px-5 py-6 lg:px-10 lg:py-8">
       <div className="mb-5 flex items-center gap-3"><span className="h-px w-8 bg-gold" /><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-gold">Your arrival at Seavist Hotel</p></div>
-      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(330px,.8fr)]">
+      <div className="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,.85fr)]">
         <div className="grid min-w-0 gap-5">
-          <div className="rounded-md border border-border bg-card p-5 shadow-lg lg:p-6">
+          <div className="rounded-3xl border border-border bg-card p-5 shadow-lg lg:p-6">
             <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-muted-foreground">Arriving Guest</p>
             <div className="mt-4 flex items-center gap-4">
-              <img src={guestImage} alt="Portrait of Daniel Carter" width={816} height={816} loading="lazy" className="size-16 shrink-0 rounded-full border-2 border-gold/60 object-cover lg:size-20" />
-               <div className="min-w-0"><h1 className="text-2xl font-bold text-foreground lg:text-3xl">Daniel Carter</h1><div className="mt-2 flex flex-wrap items-center gap-2 text-sm font-semibold"><span className="rounded-sm border border-gold/40 bg-gold-soft px-2.5 py-1 text-gold">✦ Gold · 4th Stay</span><span className="rounded-sm border border-gold/40 bg-gold-soft px-2.5 py-1 text-gold">Direct Guest</span></div></div>
+               <img src={guestImage} alt="Portrait of Daniel Carter" width={816} height={816} loading="lazy" className="size-16 shrink-0 rounded-2xl border-2 border-gold/60 object-cover lg:size-20" />
+                <div className="min-w-0"><h1 className="font-hotel text-3xl text-foreground lg:text-4xl">Daniel Carter</h1><div className="mt-2 flex flex-wrap items-center gap-2 text-sm font-semibold"><span className="rounded-full border border-gold/40 bg-gold-soft px-3 py-1 text-gold-deep dark:text-gold">✦ Gold · 4th Stay</span><span className="rounded-full border border-gold/40 bg-gold-soft px-3 py-1 text-gold-deep dark:text-gold">Direct Guest</span></div></div>
             </div>
           </div>
            <StaySummary />
           <IdVerification verificationTime={verificationTime} />
+          <div className="flex flex-wrap items-center gap-3 rounded-3xl border border-border bg-card p-4 shadow-lg"><Button variant="outline" size="touch" onClick={onPrint}><Printer /> Print Folio</Button><Button variant="navy" size="touch" onClick={onEncode}><KeyRound /> Encode 2 Keys</Button>{actionMessage && <div role="status" className="flex min-h-14 items-center gap-2 rounded-xl bg-success-soft px-4 font-semibold text-success"><CheckCircle2 className="size-5" />{actionMessage}</div>}</div>
         </div>
         <BreakfastOffer onAdd={onAddInformation} />
       </div>
-      <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-border pt-5"><Button variant="outline" size="touch" onClick={onPrint}><Printer /> Print Folio</Button><Button variant="navy" size="touch" onClick={onEncode}><KeyRound /> Encode 2 Keys</Button>{actionMessage && <div role="status" className="flex min-h-14 items-center gap-2 rounded-md bg-success-soft px-4 font-semibold text-success"><CheckCircle2 className="size-5" />{actionMessage}</div>}</div>
     </section>
   );
 }
@@ -354,13 +362,13 @@ function StaySummary() {
     { label: "Guests", value: "2 Adults", icon: UsersRound },
   ];
   return (
-    <div className="rounded-md border border-border bg-card p-5 shadow-lg lg:p-6">
+    <div className="rounded-3xl border border-border bg-card p-5 shadow-lg lg:p-6">
       <div className="mb-3 flex items-center justify-between"><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-muted-foreground">Your Stay</p><span className="flex items-center gap-1 text-sm font-bold text-success"><CheckCircle2 className="size-4" /> Ready</span></div>
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className="flex items-center gap-3 rounded-md border border-gold/30 bg-gold-soft p-4"><Hotel className="size-6 shrink-0 text-gold" /><div><p className="text-xs font-bold uppercase text-muted-foreground">Room</p><p className="text-2xl font-bold text-foreground">1204</p><p className="text-xs text-muted-foreground">Ocean Side · 2nd Floor</p></div><span className="ml-auto self-start text-xs font-bold text-success">Assigned</span></div>
-        <div className="flex items-center gap-3 rounded-md border border-success/30 bg-success-soft p-4"><CheckCircle2 className="size-6 shrink-0 text-success" /><div><p className="text-xs font-bold uppercase text-muted-foreground">Check-In Status</p><p className="text-xl font-bold text-foreground">Ready <Check className="inline size-5 text-success" /></p></div></div>
+        <div className="flex items-center gap-3 rounded-2xl border border-gold/30 bg-gold-soft p-4"><Hotel className="size-6 shrink-0 text-gold" /><div><p className="text-xs font-bold uppercase text-muted-foreground">Room</p><p className="text-2xl font-bold text-foreground">1204</p><p className="text-xs text-muted-foreground">Ocean Side · 2nd Floor</p></div><span className="ml-auto self-start text-xs font-bold text-success">Assigned</span></div>
+        <div className="flex items-center gap-3 rounded-2xl border border-success/30 bg-success-soft p-4"><CheckCircle2 className="size-6 shrink-0 text-success" /><div><p className="text-xs font-bold uppercase text-muted-foreground">Check-In Status</p><p className="text-xl font-bold text-foreground">Ready <Check className="inline size-5 text-success" /></p></div></div>
       </div>
-      <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">{details.map(({ label, value, sub, icon: Icon }) => <div key={label} className="min-w-0 rounded-md border border-border bg-secondary p-3"><div className="flex items-center gap-2 text-muted-foreground"><Icon className="size-4 shrink-0" /><span className="text-[11px] font-bold uppercase">{label}</span></div><p className="mt-2 text-sm font-bold text-foreground">{value}</p>{sub && <p className="mt-1 text-xs text-muted-foreground">{sub}</p>}</div>)}</div>
+      <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">{details.map(({ label, value, sub, icon: Icon }) => <div key={label} className="min-w-0 rounded-2xl border border-border bg-secondary p-3"><div className="flex items-center gap-2 text-muted-foreground"><Icon className="size-4 shrink-0" /><span className="text-[11px] font-bold uppercase">{label}</span></div><p className="mt-2 text-sm font-bold text-foreground">{value}</p>{sub && <p className="mt-1 text-xs text-muted-foreground">{sub}</p>}</div>)}</div>
     </div>
   );
 }
@@ -369,10 +377,10 @@ function IdVerification({ verificationTime }: { verificationTime: Date | null })
   const date = verificationTime?.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   const time = verificationTime?.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
   return (
-    <div className="rounded-md border border-border bg-card p-5 shadow-lg lg:p-6">
+    <div className="rounded-3xl border border-border bg-card p-5 shadow-lg lg:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-muted-foreground">ID Scanned</p><span className="flex items-center gap-2 rounded-sm bg-success-soft px-3 py-1.5 text-sm font-bold text-success"><CheckCircle2 className="size-4" />ID Verified</span></div>
       <div className="mt-4 grid items-center gap-5 sm:grid-cols-[220px_1fr]">
-        <img src={licenseImage} alt="Sample scanned California driver's license for Daniel Carter" width={1024} height={640} loading="lazy" className="aspect-[1.58/1] w-full rounded-md border border-border object-cover shadow-md" />
+        <img src={licenseImage} alt="Sample scanned California driver's license for Daniel Carter" width={1024} height={640} loading="lazy" className="aspect-[1.58/1] w-full rounded-2xl border border-border object-cover shadow-md" />
         <div><p className="text-lg font-bold text-foreground">Driver&apos;s License</p><div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-3"><Detail label="ID Number" value="D83947261" /><Detail label="Expiration Date" value="Nov 12, 2028" /><Detail label="Issuing Country" value="USA" /></div><div className="mt-4 flex flex-wrap items-center gap-2 text-sm"><Clock3 className="size-4 text-success" /><span className="text-muted-foreground">Verified</span><strong>{time && date ? `${time} · ${date}` : "—"}</strong></div></div>
       </div>
     </div>
@@ -380,14 +388,14 @@ function IdVerification({ verificationTime }: { verificationTime: Date | null })
 }
 
 function Detail({ label, value }: { label: string; value: string }) {
-  return <div className="rounded-md border border-border bg-secondary p-3"><p className="text-xs font-semibold text-muted-foreground">{label}</p><p className="mt-1 font-bold text-foreground">{value}</p></div>;
+  return <div className="rounded-2xl border border-border bg-secondary p-3"><p className="text-xs font-semibold text-muted-foreground">{label}</p><p className="mt-1 font-bold text-foreground">{value}</p></div>;
 }
 
 function BreakfastOffer({ onAdd }: { onAdd: () => void }) {
   return (
-    <aside className="overflow-hidden rounded-md border border-gold/40 bg-card shadow-lg xl:sticky xl:top-24">
+    <aside className="h-full overflow-hidden rounded-3xl border border-gold/40 bg-card shadow-xl lg:sticky lg:top-24">
       <div className="relative h-56 overflow-hidden"><img src={breakfastImage} alt="Elegant breakfast for two overlooking the ocean" loading="lazy" width={1280} height={900} className="h-full w-full object-cover" /><span className="absolute left-4 top-4 flex items-center gap-2 rounded-sm bg-gold px-3 py-2 text-xs font-extrabold uppercase text-gold-foreground"><Gift className="size-4" /> Your gift</span></div>
-      <div className="p-6 lg:p-7"><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-gold">A little extra for your stay</p><h2 className="font-hotel mt-3 text-3xl leading-tight text-foreground">Breakfast is on us.</h2><p className="mt-3 leading-relaxed text-muted-foreground">Complete your guest profile and enjoy a complimentary breakfast for two.</p><div className="mt-5 rounded-md border border-gold/30 bg-gold-soft p-4"><p className="flex items-center gap-2 font-bold text-gold"><ChefHat className="size-5" />Breakfast for two during your stay.</p><p className="mt-1 text-sm text-muted-foreground">Valid Sep 25 – Sep 28, 2025</p></div><Button variant="gold" size="touch" className="mt-6 w-full" onClick={onAdd}>Add Information <ArrowRight /></Button><p className="mt-3 text-center text-xs text-muted-foreground">Optional benefit · No purchase required</p></div>
+      <div className="p-6 lg:p-7"><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-gold">A little extra for your stay</p><h2 className="font-hotel mt-3 text-4xl leading-tight text-foreground">Breakfast is on us.</h2><p className="mt-3 leading-relaxed text-muted-foreground">Complete your guest profile and enjoy a complimentary breakfast for two.</p><div className="mt-5 rounded-2xl border border-gold/30 bg-gold-soft p-4"><p className="flex items-center gap-2 font-bold text-gold-deep dark:text-gold"><ChefHat className="size-5" />Breakfast for two during your stay.</p><p className="mt-1 text-sm text-muted-foreground">Valid Sep 25 – Sep 28, 2025</p></div><Button variant="gold" size="touch" className="mt-6 w-full" onClick={onAdd}>Add Information <ArrowRight /></Button><p className="mt-3 text-center text-xs text-muted-foreground">Optional benefit · No purchase required</p></div>
     </aside>
   );
 }
@@ -395,11 +403,11 @@ function BreakfastOffer({ onAdd }: { onAdd: () => void }) {
 function ContactScreen(props: { contact: ContactData; errors: Errors; emailOptIn: boolean; textOptIn: boolean; submitting: boolean; onContactChange: (field: keyof ContactData, value: string) => void; onEmailOptIn: (value: boolean) => void; onTextOptIn: (value: boolean) => void; onBack: () => void; onSubmit: () => void }) {
   return (
     <section className="screen-enter mx-auto max-w-6xl px-6 py-8 lg:py-10">
-      <div className="relative mb-6 flex min-h-44 items-center overflow-hidden rounded-md border border-gold/40"><img src={breakfastImage} alt="Complimentary breakfast for two" loading="lazy" width={1280} height={900} className="absolute inset-0 h-full w-full object-cover object-center" /><div className="absolute inset-0 bg-gradient-to-r from-primary-deep via-primary-deep/95 to-primary-deep/30" /><div className="relative max-w-xl p-6 lg:p-8"><p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-gold"><Gift className="size-4" /> Your complimentary gift</p><h2 className="font-hotel mt-2 text-3xl text-foreground">Breakfast for two, on us.</h2><p className="mt-2 text-sm text-muted-foreground">Complete your details to enjoy breakfast during your stay · Sep 25 – Sep 28, 2025</p></div></div>
+      <div className="relative mb-6 flex min-h-52 items-center overflow-hidden rounded-3xl border border-gold/40 shadow-xl"><img src={breakfastImage} alt="Complimentary breakfast for two" loading="lazy" width={1280} height={900} className="absolute inset-0 h-full w-full object-cover object-center" /><div className="absolute inset-0 bg-gradient-to-r from-primary-deep via-primary-deep/95 to-primary-deep/20" /><div className="relative max-w-xl p-6 lg:p-8"><p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-gold"><Gift className="size-4" /> Your complimentary gift</p><h2 className="font-hotel mt-2 text-4xl text-primary-foreground">Breakfast for two, on us.</h2><p className="mt-2 text-sm text-primary-foreground/75">Complete your details to enjoy breakfast during your stay · Sep 25 – Sep 28, 2025</p></div></div>
       <div className="mb-6"><h1 className="text-3xl font-bold text-foreground lg:text-4xl">Confirm Your Contact Information</h1><p className="mt-2 text-base text-muted-foreground">Add your details so we can keep you connected with Seavist Hotel.</p></div>
       <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
-        <div className="rounded-md border border-border bg-card p-5 lg:p-7"><div className="grid gap-5 sm:grid-cols-2"><FormField icon={Mail} label="Email Address" error={props.errors.email}><Input type="email" value={props.contact.email} onChange={(event) => props.onContactChange("email", event.target.value)} aria-invalid={Boolean(props.errors.email)} className="h-14 bg-secondary px-4 text-base" /></FormField><FormField icon={Phone} label="Phone Number" error={props.errors.phone}><Input type="tel" value={props.contact.phone} onChange={(event) => props.onContactChange("phone", event.target.value)} aria-invalid={Boolean(props.errors.phone)} className="h-14 bg-secondary px-4 text-base" /></FormField><FormField icon={MapPin} label="Address" error={props.errors.address} className="sm:col-span-2"><textarea value={props.contact.address} onChange={(event) => props.onContactChange("address", event.target.value)} aria-invalid={Boolean(props.errors.address)} className="min-h-28 w-full resize-none rounded-md border border-input bg-secondary px-4 py-3 text-base text-foreground shadow-sm outline-none focus:border-ring focus:ring-1 focus:ring-ring" /></FormField></div></div>
-        <div className="rounded-md border border-border bg-card p-5"><h2 className="text-xl font-bold text-foreground">Stay Connected</h2><p className="mt-1 text-sm text-muted-foreground">Choose how you&apos;d like Seavist Hotel to stay in touch.</p><div className="mt-5 space-y-3"><Preference checked={props.emailOptIn} onChange={props.onEmailOptIn} icon={Mail} label="Email me about hotel offers and experiences" /><Preference checked={props.textOptIn} onChange={props.onTextOptIn} icon={Smartphone} label="Text me about hotel offers and experiences" /></div><p className="mt-5 flex items-start gap-2 text-xs text-muted-foreground"><ShieldCheck className="size-4 shrink-0 text-success" />Your information is handled securely and according to our Privacy Policy.</p></div>
+        <div className="rounded-3xl border border-border bg-card p-5 shadow-lg lg:p-7"><div className="grid gap-5 sm:grid-cols-2"><FormField icon={Mail} label="Email Address" error={props.errors.email}><Input type="email" value={props.contact.email} onChange={(event) => props.onContactChange("email", event.target.value)} aria-invalid={Boolean(props.errors.email)} className="h-14 rounded-xl bg-secondary px-4 text-base" /></FormField><FormField icon={Phone} label="Phone Number" error={props.errors.phone}><Input type="tel" value={props.contact.phone} onChange={(event) => props.onContactChange("phone", event.target.value)} aria-invalid={Boolean(props.errors.phone)} className="h-14 rounded-xl bg-secondary px-4 text-base" /></FormField><FormField icon={MapPin} label="Address" error={props.errors.address} className="sm:col-span-2"><textarea value={props.contact.address} onChange={(event) => props.onContactChange("address", event.target.value)} aria-invalid={Boolean(props.errors.address)} className="min-h-28 w-full resize-none rounded-xl border border-input bg-secondary px-4 py-3 text-base text-foreground shadow-sm outline-none focus:border-ring focus:ring-1 focus:ring-ring" /></FormField></div></div>
+        <div className="rounded-3xl border border-border bg-card p-5 shadow-lg"><h2 className="text-xl font-bold text-foreground">Stay Connected</h2><p className="mt-1 text-sm text-muted-foreground">Choose how you&apos;d like Seavist Hotel to stay in touch.</p><div className="mt-5 space-y-3"><Preference checked={props.emailOptIn} onChange={props.onEmailOptIn} icon={Mail} label="Email me about hotel offers and experiences" /><Preference checked={props.textOptIn} onChange={props.onTextOptIn} icon={Smartphone} label="Text me about hotel offers and experiences" /></div><p className="mt-5 flex items-start gap-2 text-xs text-muted-foreground"><ShieldCheck className="size-4 shrink-0 text-success" />Your information is handled securely and according to our Privacy Policy.</p></div>
       </div>
        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6"><Button variant="outline" size="touch" onClick={props.onBack} disabled={props.submitting}><ArrowLeft /> Back</Button><Button variant="gold" size="touch" onClick={props.onSubmit} disabled={props.submitting}>{props.submitting ? <><LoaderCircle className="animate-spin" />Adding your benefit...</> : <>Confirm &amp; Claim Breakfast <ArrowRight /></>}</Button></div>
     </section>
@@ -411,7 +419,7 @@ function FormField({ icon: Icon, label, error, className = "", children }: { ico
 }
 
 function Preference({ checked, onChange, icon: Icon, label }: { checked: boolean; onChange: (value: boolean) => void; icon: typeof Mail; label: string }) {
-  return <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-md border border-border bg-card px-4"><Checkbox checked={checked} onCheckedChange={(value) => onChange(value === true)} className="size-5" /><Icon className="size-5 text-gold" /><span className="font-medium">{label}</span></label>;
+  return <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl border border-border bg-secondary px-4"><Checkbox checked={checked} onCheckedChange={(value) => onChange(value === true)} className="size-5" /><Icon className="size-5 text-gold" /><span className="font-medium">{label}</span></label>;
 }
 
 function SuccessScreen({ onClose }: { onClose: () => void }) {
