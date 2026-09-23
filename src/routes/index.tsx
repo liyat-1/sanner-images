@@ -219,7 +219,7 @@ function InitialScreen({ onPlaced, onUnreadable }: { onPlaced: () => void; onUnr
 
         {/* Caption for card frames */}
         <Callout visible={f >= 3} style={{ left: "50%", bottom: "6%", transform: "translateX(-50%)" }}>
-          {CAPTIONS[f] || CAPTIONS[3]}
+          {CAPTIONS[f] || CAPTIONS[6]}
         </Callout>
 
         {/* Discreet demo control */}
