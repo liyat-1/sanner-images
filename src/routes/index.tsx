@@ -123,13 +123,13 @@ function InitialScreen({ onPlaced, onUnreadable }: { onPlaced: () => void; onUnr
 
   return (
     <div className="grid h-full grid-cols-[34fr_66fr]">
-      <section className="flex flex-col justify-center border-r border-k-line bg-k-paper px-[5vw]">
+      <section className="flex flex-col justify-center border-r border-k-line bg-k-paper px-[4vw]">
         <p className="mb-6 text-sm font-semibold tracking-[0.2em] text-k-ocean">SEAVIST HOTEL</p>
         <h1 className="text-[clamp(2.2rem,4.2vw,4.6rem)] font-bold leading-[1.02] tracking-tight text-k-navy">
           YOUR JOURNEY BEGINS HERE
         </h1>
         <p className="mt-6 text-[clamp(1.1rem,1.5vw,1.6rem)] text-k-sub">Scan your ID privately and securely.</p>
-        <div className="mt-10 flex items-center gap-2" aria-label="ID scanning guide steps">
+        <div className="mt-10 flex items-center gap-1" aria-label="ID scanning guide steps">
           {Array.from({ length: GUIDE_STEPS }, (_, i) => (
             <button
               key={i}
@@ -137,7 +137,7 @@ function InitialScreen({ onPlaced, onUnreadable }: { onPlaced: () => void; onUnr
               onClick={() => setF(i)}
               aria-label={`Show instruction ${i + 1} of ${GUIDE_STEPS}`}
               aria-current={i === f ? "step" : undefined}
-              className={`grid h-8 w-8 place-items-center rounded-full border transition-colors ${i === f ? "border-k-navy bg-k-navy" : "border-k-line bg-k-paper hover:border-k-ocean"}`}
+              className={`grid h-7 w-7 place-items-center rounded-full border transition-colors ${i === f ? "border-k-navy bg-k-navy" : "border-k-line bg-k-paper hover:border-k-ocean"}`}
             >
               <span className={`h-2.5 w-2.5 rounded-full ${i === f ? "bg-k-paper" : "bg-k-line"}`} />
             </button>
