@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { Check, Mail, MessageSquare, Minus, Square, X } from "lucide-react";
-import counterImg from "@/assets/kiosk-counter.jpg";
-import scannerImg from "@/assets/unitech-scanner.jpg";
-import licenseFront from "@/assets/daniel-license-sample.jpg";
-import licenseBack from "@/assets/license-back.png";
+import hardwareAsset from "@/assets/directful-hardware-master.jpg.asset.json";
+import handFrontImg from "@/assets/hardware-hand-front.jpg";
+import handBackImg from "@/assets/hardware-hand-back.jpg";
+import handPlaceImg from "@/assets/hardware-hand-place.jpg";
 import breakfastImg from "@/assets/seavist-breakfast.jpg";
 
 export const Route = createFileRoute("/")({
@@ -52,7 +52,6 @@ function KioskApp() {
   useEffect(() => {
     let t: ReturnType<typeof setTimeout> | undefined;
     if (step === "LOCATING") t = setTimeout(() => { setAttempt((a) => a + 1); setStep(simulateError ? "ERROR" : "FOUND"); }, 3200);
-    if (step === "FOUND") t = setTimeout(() => setStep("CLAIM"), 5000);
     if (step === "ERROR") t = setTimeout(() => { setSimulateError(false); setStep("INITIAL"); }, 6000);
     if (step === "SUCCESS") t = setTimeout(reset, 9000);
     return () => clearTimeout(t);
@@ -86,10 +85,12 @@ function TitleBar() {
   return (
     <header className="flex h-8 shrink-0 select-none items-center justify-between bg-k-chrome text-[12px] text-k-mist/80">
       <div className="flex items-center gap-2 pl-3">
-        <span className="grid h-4 w-4 place-items-center rounded-[3px] bg-k-gold text-[10px] font-bold text-k-navy">D</span>
-        <span className="font-semibold text-k-mist">Directful</span>
+        <span className="grid h-4 w-4 grid-cols-2 gap-px" aria-label="Windows application">
+          <i className="bg-k-ocean" /><i className="bg-k-ocean" /><i className="bg-k-ocean" /><i className="bg-k-ocean" />
+        </span>
+        <span className="font-semibold text-k-mist">Directful Hotel ID Scanner</span>
         <span className="opacity-50">—</span>
-        <span>Seavist Hotel · Guest Check-In</span>
+        <span>Seavist Hotel</span>
       </div>
       <div className="flex h-full" aria-hidden>
         {[Minus, Square, X].map((I, i) => (
@@ -122,9 +123,7 @@ function InitialScreen({ onPlaced, onUnreadable }: { onPlaced: () => void; onUnr
   }, [f]);
 
   const zoomed = f >= 2;
-  const cardVisible = f >= 3;
-  const flipped = f >= 4;
-  const flat = f >= 6;
+  const scene = f < 3 ? hardwareAsset.url : f === 3 ? handFrontImg : f < 6 ? handBackImg : handPlaceImg;
 
   return (
     <div className="grid h-full grid-cols-[34fr_66fr]">
@@ -147,27 +146,17 @@ function InitialScreen({ onPlaced, onUnreadable }: { onPlaced: () => void; onUnr
         role="button"
         aria-label="Instructional animation: place your ID barcode side down on the scanner"
       >
-        {/* Frame A: counter */}
+        {/* Every frame keeps the exact reference photo and hardware proportions. */}
         <img
-          src={counterImg}
-          alt="Tablet on the front desk with the Unitech ID scanner to its left, connected by cable"
-          width={1600}
-          height={1008}
-          className="absolute inset-0 h-full w-full object-cover transition-all duration-[1200ms] ease-in-out"
+          src={scene}
+          alt="Directful tablet and Unitech scanner connected by cable on the Seavist Hotel front desk"
+          width={1536}
+          height={1024}
+          className="absolute inset-0 h-full w-full object-cover transition-all duration-[1000ms] ease-in-out"
           style={{
-            opacity: zoomed ? 0 : 1,
-            transform: zoomed ? "scale(2.1)" : "scale(1)",
-            transformOrigin: "24% 62%",
+            transform: zoomed ? `scale(${f >= 5 ? 1.88 : 1.62})` : "scale(1)",
+            transformOrigin: "29% 57%",
           }}
-        />
-        {/* Frame B: scanner close-up */}
-        <img
-          src={scannerImg}
-          alt="Unitech ID scanner with its glass scanning surface"
-          width={1600}
-          height={1008}
-          className="absolute inset-0 h-full w-full object-cover transition-all duration-[1200ms] ease-in-out"
-          style={{ opacity: zoomed ? 1 : 0, transform: zoomed ? `scale(${f >= 5 ? 1.08 : 1})` : "scale(0.8)", transformOrigin: "50% 35%" }}
         />
 
         {/* Callout: scanner in counter scene */}
@@ -175,7 +164,7 @@ function InitialScreen({ onPlaced, onUnreadable }: { onPlaced: () => void; onUnr
           {CAPTIONS[1]}
         </Callout>
         {f === 1 && (
-          <div className="k-pulse pointer-events-none absolute rounded-md border-2 border-k-gold" style={{ left: "4%", top: "44%", width: "40%", height: "32%" }} />
+          <div className="k-pulse pointer-events-none absolute rounded-md border-2 border-k-gold" style={{ left: "18%", top: "42%", width: "28%", height: "34%" }} />
         )}
 
         {/* Callout: glass */}
@@ -183,39 +172,8 @@ function InitialScreen({ onPlaced, onUnreadable }: { onPlaced: () => void; onUnr
           {CAPTIONS[2]}
         </Callout>
         {f === 2 && (
-          <div className="k-pulse pointer-events-none absolute rounded-lg border-2 border-k-gold" style={{ left: "18%", top: "19%", width: "65%", height: "32%", transform: "perspective(900px) rotateX(35deg)" }} />
+          <div className="k-pulse pointer-events-none absolute rounded-md border-2 border-k-gold" style={{ left: "16%", top: "14%", width: "68%", height: "38%" }} />
         )}
-
-        {/* The ID card (3D flip + place flat) */}
-        <div
-          className="pointer-events-none absolute transition-all duration-[1100ms] ease-in-out"
-          style={{
-            left: "50%",
-            top: flat ? "33%" : "52%",
-            width: flat ? "34%" : "40%",
-            opacity: cardVisible ? 1 : 0,
-            transform: `translate(-50%, -50%) ${cardVisible ? "" : "translateY(40%)"} perspective(1200px) ${flat ? "rotateX(58deg) rotateZ(-4deg)" : "rotateX(0deg)"}`,
-          }}
-        >
-          <div
-            className="relative aspect-[1.586] w-full transition-transform duration-[1000ms] ease-in-out [transform-style:preserve-3d]"
-            style={{ transform: flipped && !flat ? "rotateY(180deg)" : "rotateY(0deg)" }}
-          >
-            <img src={licenseFront} alt="" className="absolute inset-0 h-full w-full rounded-xl object-cover shadow-2xl [backface-visibility:hidden]" />
-            <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)]">
-              <img src={licenseBack} alt="" className="h-full w-full rounded-xl object-cover shadow-2xl" />
-              {f === 5 && (
-                <div className="k-pulse absolute rounded-md border-[3px] border-k-gold" style={{ left: "9%", top: "15%", width: "82%", height: "48%" }} />
-              )}
-            </div>
-          </div>
-          {/* Hand */}
-          <div
-            className="absolute -bottom-[22%] left-1/2 h-[45%] w-[34%] -translate-x-1/2 rounded-t-[45%] bg-gradient-to-b from-[oklch(0.78_0.07_55)] to-[oklch(0.68_0.08_50)] shadow-xl transition-opacity duration-500"
-            style={{ opacity: cardVisible && !flat ? 1 : 0 }}
-            aria-hidden
-          />
-        </div>
 
         {/* Caption for card frames */}
         <Callout visible={f >= 3} style={{ left: "50%", bottom: "6%", transform: "translateX(-50%)" }}>
@@ -268,25 +226,34 @@ function Locating() {
 /* ---------------- Found ---------------- */
 function Found({ onNext }: { onNext: () => void }) {
   return (
-    <div className="grid h-full place-items-center bg-k-mist px-8">
-      <div className="w-full max-w-2xl rounded-md border border-k-line bg-k-paper p-12 shadow-sm">
+    <div className="grid h-full grid-cols-[47fr_53fr] bg-k-mist">
+      <section className="flex flex-col justify-center border-r border-k-line bg-k-paper px-[5vw] py-10">
         <p className="text-sm font-semibold tracking-[0.2em] text-k-ocean">RESERVATION FOUND</p>
-        <h2 className="mt-3 text-[clamp(2.2rem,3.6vw,3.6rem)] font-bold text-k-navy">Daniel Carter</h2>
+        <h2 className="mt-3 text-[clamp(2.3rem,3.8vw,4rem)] font-bold text-k-navy">Daniel Carter</h2>
         <dl className="mt-8 grid grid-cols-3 border-y border-k-line py-6 text-lg">
           <Info label="Room" value="1204" />
           <Info label="Stay" value="Sep 25 – Sep 28" />
           <Info label="Room type" value="King Ocean View" />
         </dl>
-        <div className="mt-6 flex items-center gap-4">
+        <div className="mt-7 flex items-center gap-4">
           <span className="inline-flex items-center gap-2 rounded-sm bg-k-green/12 px-3 py-1.5 text-sm font-semibold tracking-wider text-k-green">
             <Check className="h-4 w-4" strokeWidth={3} /> ID VERIFIED
           </span>
           <span className="text-k-sub">US Driver's License · Massachusetts</span>
         </div>
-        <button onClick={onNext} className="mt-10 h-14 w-full rounded-md bg-k-navy text-lg font-semibold text-k-mist transition hover:bg-k-ocean active:scale-[0.99]">
-          Continue
-        </button>
-      </div>
+      </section>
+      <section className="relative flex flex-col justify-end overflow-hidden p-10">
+        <img src={breakfastImg} alt="Breakfast for two with coffee, orange juice, pastries and eggs" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-k-navy/75" />
+        <div className="relative max-w-xl text-k-mist">
+          <p className="text-sm font-bold tracking-[0.18em] text-k-gold">YOUR GUEST BENEFIT</p>
+          <h3 className="mt-3 text-[clamp(2rem,3.4vw,3.8rem)] font-bold leading-tight">Complimentary breakfast for two</h3>
+          <p className="mt-4 text-xl text-k-mist/85">Add your information to claim breakfast during your stay.</p>
+          <button onClick={onNext} className="mt-8 h-16 min-w-64 rounded-md bg-k-gold px-8 text-xl font-bold text-k-navy transition hover:brightness-105 active:scale-[0.99]">
+            Add Information
+          </button>
+        </div>
+      </section>
     </div>
   );
 }
