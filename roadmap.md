@@ -18,4 +18,4 @@
 - [x] Replace the instructional scene with the exact tablet and Unitech hardware reference
 - [x] Add photorealistic hand, ID flip, barcode, and placement frames
 - [x] Combine reservation confirmation and guest benefit into one two-column screen
-- [ ] Verify the revised hardware animation and combined reservation screen
+- [x] Verify the revised hardware animation and combined reservation screen

@@ -230,13 +230,13 @@ function Found({ onNext }: { onNext: () => void }) {
       <section className="flex flex-col justify-center border-r border-k-line bg-k-paper px-[5vw] py-10">
         <p className="text-sm font-semibold tracking-[0.2em] text-k-ocean">RESERVATION FOUND</p>
         <h2 className="mt-3 text-[clamp(2.3rem,3.8vw,4rem)] font-bold text-k-navy">Daniel Carter</h2>
-        <dl className="mt-8 grid grid-cols-3 border-y border-k-line py-6 text-lg">
+        <dl className="mt-8 grid grid-cols-[0.7fr_1fr_1.3fr] gap-3 border-y border-k-line py-6 text-[clamp(0.95rem,1.35vw,1.125rem)]">
           <Info label="Room" value="1204" />
           <Info label="Stay" value="Sep 25 – Sep 28" />
           <Info label="Room type" value="King Ocean View" />
         </dl>
         <div className="mt-7 flex items-center gap-4">
-          <span className="inline-flex items-center gap-2 rounded-sm bg-k-green/12 px-3 py-1.5 text-sm font-semibold tracking-wider text-k-green">
+          <span className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-sm bg-k-green/12 px-3 py-1.5 text-sm font-semibold tracking-wider text-k-green">
             <Check className="h-4 w-4" strokeWidth={3} /> ID VERIFIED
           </span>
           <span className="text-k-sub">US Driver's License · Massachusetts</span>
