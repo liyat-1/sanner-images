@@ -113,38 +113,42 @@ const CAPTIONS = [
   "PLACE THE BARCODE FLAT ON THE SCANNER",
   "PLACE THE BARCODE FLAT ON THE SCANNER",
 ];
-const FRAME_MS = [1300, 1800, 1700, 1400, 1500, 1500, 2000];
+const GUIDE_STEPS = CAPTIONS.length;
 
 function InitialScreen({ onPlaced, onUnreadable }: { onPlaced: () => void; onUnreadable: () => void }) {
   const [f, setF] = useState(0);
-  useEffect(() => {
-    const t = setTimeout(() => setF((x) => (x + 1) % FRAME_MS.length), FRAME_MS[f]);
-    return () => clearTimeout(t);
-  }, [f]);
 
   const zoomed = f >= 2;
   const scene = f < 3 ? hardwareAsset.url : f === 3 ? handFrontImg : f < 6 ? handBackImg : handPlaceImg;
 
   return (
     <div className="grid h-full grid-cols-[34fr_66fr]">
-      <section className="flex flex-col justify-center border-r border-k-line bg-k-paper px-[5vw]">
+      <section className="flex flex-col justify-center border-r border-k-line bg-k-paper px-[4vw]">
         <p className="mb-6 text-sm font-semibold tracking-[0.2em] text-k-ocean">SEAVIST HOTEL</p>
         <h1 className="text-[clamp(2.2rem,4.2vw,4.6rem)] font-bold leading-[1.02] tracking-tight text-k-navy">
           YOUR JOURNEY BEGINS HERE
         </h1>
         <p className="mt-6 text-[clamp(1.1rem,1.5vw,1.6rem)] text-k-sub">Scan your ID privately and securely.</p>
-        <div className="mt-10 flex gap-1.5" aria-hidden>
-          {FRAME_MS.map((_, i) => (
-            <span key={i} className={`h-1 rounded-full transition-all duration-500 ${i === f ? "w-8 bg-k-navy" : "w-3 bg-k-line"}`} />
+        <div className="mt-10 flex items-center gap-1" aria-label="ID scanning guide steps">
+          {Array.from({ length: GUIDE_STEPS }, (_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => setF(i)}
+              aria-label={`Show instruction ${i + 1} of ${GUIDE_STEPS}`}
+              aria-current={i === f ? "step" : undefined}
+              className={`grid h-7 w-7 place-items-center rounded-full border transition-colors ${i === f ? "border-k-navy bg-k-navy" : "border-k-line bg-k-paper hover:border-k-ocean"}`}
+            >
+              <span className={`h-2.5 w-2.5 rounded-full ${i === f ? "bg-k-paper" : "bg-k-line"}`} />
+            </button>
           ))}
         </div>
+        <p className="mt-2 text-sm text-k-sub">Tap a dot to view each step.</p>
       </section>
 
       <section
-        className="relative cursor-pointer overflow-hidden bg-k-chrome"
-        onClick={onPlaced}
-        role="button"
-        aria-label="Instructional animation: place your ID barcode side down on the scanner"
+        className="relative overflow-hidden bg-k-chrome"
+        aria-label="ID placement instructions"
       >
         {/* Every frame keeps the exact reference photo and hardware proportions. */}
         <img
@@ -152,10 +156,10 @@ function InitialScreen({ onPlaced, onUnreadable }: { onPlaced: () => void; onUnr
           alt="Directful tablet and Unitech scanner connected by cable on the Seavist Hotel front desk"
           width={1536}
           height={1024}
-          className="absolute inset-0 h-full w-full object-cover transition-all duration-[1000ms] ease-in-out"
+          className="absolute inset-0 h-full w-full object-contain"
           style={{
-            transform: zoomed ? `scale(${f >= 5 ? 1.88 : 1.62})` : "scale(1)",
-            transformOrigin: "29% 57%",
+            transform: zoomed ? `scale(${f >= 5 ? 1.5 : 1.34})` : "scale(0.94)",
+            transformOrigin: "36% 54%",
           }}
         />
 
@@ -179,6 +183,16 @@ function InitialScreen({ onPlaced, onUnreadable }: { onPlaced: () => void; onUnr
         <Callout visible={f >= 3} style={{ left: "50%", bottom: "6%", transform: "translateX(-50%)" }}>
           {CAPTIONS[f] || CAPTIONS[6]}
         </Callout>
+
+        {f === GUIDE_STEPS - 1 && (
+          <button
+            type="button"
+            onClick={onPlaced}
+            className="absolute bottom-6 left-1/2 h-14 -translate-x-1/2 rounded-md bg-k-gold px-7 text-lg font-bold text-k-navy shadow-lg hover:brightness-105"
+          >
+            ID Placed on Scanner
+          </button>
+        )}
 
         {/* Discreet demo control */}
         <button
